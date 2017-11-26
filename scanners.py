@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from travel_options import Airports, Countries
 import json
+import requests
 
 
 def search_dictionary(source, needles, haystack):
@@ -54,10 +55,13 @@ class Scanner(metaclass=ABCMeta):
 
 
 class TravelMarketScanner(Scanner):
+    BaseUrl = "https://www.travelmarket.dk/"
+
     def __init__(self):
         super().__init__()
 
-        self.airport_dictionary = {Airports.AALBORG: "503274", Airports.BILLUND: "499708", Airports.COPENHAGEN: "500055"}
+        self.airport_dictionary = {Airports.AALBORG: "503274", Airports.BILLUND: "499708",
+                                   Airports.COPENHAGEN: "500055"}
         self.country_dictionary = {Countries.CAPE_VERDE: "500104", Countries.CYPRUS: "500122",
                                    Countries.EGYPT: "500297", Countries.FRANCE: "500439", Countries.GREECE: "500575",
                                    Countries.MALTA: "501574", Countries.PORTUGAL: "502079", Countries.SPAIN: "500347",
@@ -115,6 +119,13 @@ class TravelMarketScanner(Scanner):
 
         return json.dumps(filters)
 
+    def post(self, page):
+        data = {"action": "getListJSON", "filters": self.synthesize_filter_json(page)}
+
+        result = requests.post(TravelMarketScanner.BaseUrl + "tmcomponents/modules/tm_charter/public/ajax"
+                                                             "/charter_v7_requests.cfm", data=data)
+        result
+
     @log_on_failure
     def scan(self):
         pass
@@ -130,7 +141,8 @@ class SpiesScanner(Scanner):
     def __init__(self):
         super().__init__()
 
-        self.airport_dictionary = {Airports.AALBORG: "503274", Airports.BILLUND: "499708", Airports.COPENHAGEN: "500055"}
+        self.airport_dictionary = {Airports.AALBORG: "503274", Airports.BILLUND: "499708",
+                                   Airports.COPENHAGEN: "500055"}
 
     @log_on_failure
     def scan(self):
