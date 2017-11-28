@@ -29,6 +29,8 @@ def log_on_failure(func):
 
 
 class Scanner(metaclass=ABCMeta):
+    BaseHeaders = {"User-Agent": None}
+
     def __init__(self):
         self.agent = None
 

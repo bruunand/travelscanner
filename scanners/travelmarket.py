@@ -44,7 +44,8 @@ class TravelMarketScanner(Scanner):
         return 0 if self.get_options().maximum_days_from_departure is None else self.get_options().maximum_days_from_departure
 
     def synthesize_filter_json(self, page):
-        filters = dict(bSpecified=True, strKeyDestination="", sHotelName="", bAllInclusive=self.get_all_inclusive(),
+        filters = dict(bSpecified=True, bUnspecified=False, strKeyDestination="", sHotelName="",
+                       bAllInclusive=self.get_all_inclusive(),
                        bFlightOnly=False, bPool=0, bChildPool=0, nCurrentPage=page, nSortBy=1,
                        nMinStars=self.get_minimum_stars(), nMatrixWeek=0, nMatrixPrice=0, lDestinations="",
                        lSubAreas="", lAreas="", lSuppliers="",
@@ -56,9 +57,10 @@ class TravelMarketScanner(Scanner):
         return json.dumps(filters)
 
     def post(self, page):
-        data = {"action": "getListJSON", "filters": self.synthesize_filter_json(page)}
+        data = {"action": "getListJSON", "filters": self.synthesize_filter_json(page),
+                "dDeparture": self.get_departure(), "sLanguage": "DK"}
 
-        return requests.post(TravelMarketScanner.ScanUrl, data=data)
+        return requests.post(TravelMarketScanner.ScanUrl, data=data, headers=Scanner.BaseHeaders)
 
     @log_on_failure
     def scan(self):
