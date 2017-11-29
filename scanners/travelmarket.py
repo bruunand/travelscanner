@@ -74,6 +74,7 @@ class TravelMarketScanner(Scanner):
 
         return requests.post(TravelMarketScanner.ScanUrl, data=data, headers=Scanner.BaseHeaders)
 
+    @log_on_failure
     def get_travels(self, page):
         travels = []
         result = json.loads(self.post(page).text)
@@ -91,7 +92,6 @@ class TravelMarketScanner(Scanner):
 
         return travels
 
-    @log_on_failure
     def scan(self):
         all_travels = []
         current_page = 1
