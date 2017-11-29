@@ -2,18 +2,27 @@ from abc import ABCMeta, abstractmethod
 from travel_options import Airports, Countries
 
 
+def get_default_if_none(value, default):
+    """Returns the specified value unless it is none, in which case the specified default will be returned."""
+    return default if value is None else value
+
+
 def validate_dictionary(source, needles, haystack):
+    """Used to validate whether requested entities (airports or countries) are supported by a certain scanner."""
     for item in needles:
         if not haystack.__contains__(item):
             print("{0} is not supported by {1}, will be skipped.".format(item, source.__class__.__name__))
 
 
 def join_values(keys, dictionary, separator):
+    """Joins a list of entities (airports or countries) as long as they are contained in the scanner's dictionary."""
     values = []
 
     for key in keys:
         if dictionary.__contains__(key):
             values.append(dictionary[key])
+        else:
+            print("Skipping key {0} in join.".format(key))
 
     return separator.join(values)
 

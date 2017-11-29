@@ -1,6 +1,6 @@
 import json
 import requests
-from scanner import Scanner, join_values, log_on_failure
+from scanner import Scanner, join_values, log_on_failure, get_default_if_none
 from travel_options import Airports, Countries
 
 
@@ -35,30 +35,35 @@ class TravelMarketScanner(Scanner):
         return 1 if self.get_options().all_inclusive else 0
 
     def get_minimum_stars(self):
-        return 0 if self.get_options().minimum_hotel_stars is None else self.get_options().minimum_hotel_stars
+        return get_default_if_none(self.get_options().minimum_hotel_stars, 0)
 
     def get_departure(self):
         return self.get_options().earliest_departure_date.strftime('%Y-%m-%d')
 
     def get_flex_days(self):
-        return 0 if self.get_options().maximum_days_from_departure is None else self.get_options().maximum_days_from_departure
+        return get_default_if_none(self.get_options().maximum_days_from_departure, 0)
 
-    def synthesize_filter_json(self, page):
-        filters = dict(bSpecified=True, bUnspecified=False, strKeyDestination="", sHotelName="",
-                       bAllInclusive=self.get_all_inclusive(),
+    def get_min_price(self):
+        return get_default_if_none(self.get_options().min_price, 0)
+
+    def get_max_price(self):
+        return get_default_if_none(self.get_options().max_price, 0)
+
+    def synthesize_filters(self, page):
+        filters = dict(bSpecified=True, bUnSpecified=False, strKeyDestination="", sHotelName="",
+                       bAllinclusive=self.get_all_inclusive(), flexdays=self.get_flex_days(),
                        bFlightOnly=False, bPool=0, bChildPool=0, nCurrentPage=page, nSortBy=1,
                        nMinStars=self.get_minimum_stars(), nMatrixWeek=0, nMatrixPrice=0, lDestinations="",
-                       lSubAreas="", lAreas="", lSuppliers="",
+                       nMinPrice=self.get_min_price(), nMaxPrice=self.get_max_price(), lSubAreas="", lAreas="", lSuppliers="",
                        lDepartures=join_values(self.get_options().departure_airports, self.airport_dictionary, ","),
                        lDeparture=self.get_departure(), lDurations=self.get_duration(),
-                       lCountries=join_values(self.get_options().destination_countries, self.country_dictionary, ","),
-                       flexdays=self.get_flex_days())
+                       lCountries=join_values(self.get_options().destination_countries, self.country_dictionary, ","))
 
         return json.dumps(filters)
 
     def post(self, page):
-        data = {"action": "getListJSON", "filters": self.synthesize_filter_json(page),
-                "dDeparture": self.get_departure(), "sLanguage": "DK"}
+        data = dict(action="getListJSON", filters=self.synthesize_filters(page), dDeparture=self.get_departure(),
+                    sLanguage="DK", nLanguageID=2, nSupplierId=21)
 
         return requests.post(TravelMarketScanner.ScanUrl, data=data, headers=Scanner.BaseHeaders)
 

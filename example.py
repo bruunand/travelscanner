@@ -9,7 +9,8 @@ options = agent.get_travel_options()
 # Set options for our desired travel
 options.departure_airports = [Airports.AALBORG, Airports.BILLUND, Airports.COPENHAGEN]
 options.destination_countries = [Countries.SPAIN, Countries.GREECE]
-#options.set_earliest_departure_date('27/07/2018')
+options.set_earliest_departure_date('27/01/2018')
+options.max_price = 5000
 
 # Add scanners
 agent.add_scanner(TravelMarketScanner())
