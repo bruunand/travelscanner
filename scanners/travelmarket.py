@@ -61,9 +61,8 @@ class TravelMarketScanner(Scanner):
                        bFlightOnly=False, bPool=0, bChildPool=0, nCurrentPage=page, nSortBy=1,
                        nMinStars=self.get_minimum_stars(), nMatrixWeek=0, nMatrixPrice=0, lDestinations="",
                        nMinPrice=self.get_min_price(), nMaxPrice=self.get_max_price(), lSubAreas="", lAreas="",
-                       lSuppliers="",
                        lDepartures=join_values(self.get_options().departure_airports, self.airport_dictionary, ","),
-                       lDeparture=self.get_departure(), lDurations=self.get_duration(),
+                       lDeparture=self.get_departure(), lDurations=self.get_duration(), lSuppliers="",
                        lCountries=join_values(self.get_options().destination_countries, self.country_dictionary, ","))
 
         return json.dumps(filters)
