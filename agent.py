@@ -1,7 +1,8 @@
-from travel_options import TravelOptions
 from datetime import timedelta
 from time import sleep
+
 from errors import NoScannersException
+from model.travel_options import TravelOptions
 
 
 class Agent(object):
@@ -25,9 +26,15 @@ class Agent(object):
             raise NoScannersException()
 
         while True:
-            [scanner.scan() for scanner in self.scanners]
+            travels = []
+
+            for scanner in self.scanners:
+                travels.extend(scanner.scan())
 
             if self.scan_interval is None:
                 break
             else:
+                for travel in travels:
+                    print(travel.get_hash())
+
                 sleep(self.scan_interval.total_seconds())

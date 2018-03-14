@@ -1,9 +1,12 @@
 import json
-import requests
 from datetime import datetime
-from travel import Travel
-from scanner import Scanner, join_values, log_on_failure, get_default_if_none
-from travel_options import Airports, Countries
+
+import requests
+from logging import getLogger
+
+from model.travel import Travel
+from model.travel_options import Airports, Countries
+from scanners.scanner import Scanner, join_values, log_on_failure, get_default_if_none
 
 
 class TravelMarketScanner(Scanner):
@@ -20,6 +23,13 @@ class TravelMarketScanner(Scanner):
                                    Countries.EGYPT: "500297", Countries.FRANCE: "500439", Countries.GREECE: "500575",
                                    Countries.MALTA: "501574", Countries.PORTUGAL: "502079", Countries.SPAIN: "500347",
                                    Countries.THAILAND: "502685", Countries.UNITED_KINGDOM: "500481"}
+
+    def set_agent(self, agent):
+        super().set_agent(agent)
+
+        # Warn about options that cannot be satisfied
+        if not self.get_options().number_of_guests is None:
+            getLogger().warning(f"Number of guests option cannot be satisfied by {self.__class__.__name__}.")
 
     def get_duration(self):
         duration_days = self.get_options().duration_days
@@ -56,6 +66,7 @@ class TravelMarketScanner(Scanner):
         return datetime.strptime(date, TravelMarketScanner.DateFormat)
 
     def synthesize_filters(self, page):
+        # Synthesizes the options to something that can be interpreted by TravelMarket
         filters = dict(bSpecified=True, bUnSpecified=False, strKeyDestination="", sHotelName="",
                        bAllinclusive=self.get_all_inclusive(), flexdays=self.get_flex_days(),
                        bFlightOnly=False, bPool=0, bChildPool=0, nCurrentPage=page, nSortBy=1,
@@ -84,12 +95,15 @@ class TravelMarketScanner(Scanner):
                 if lowest_price is None or price['PRICE'] < lowest_price:
                     lowest_price = price['PRICE']
 
-            travel = Travel(country=item['COUNTRY'], vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
+            travel = Travel(self, country=item['COUNTRY'], vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
                             area=item['DESTINATION'], hotel_stars=item['STARS'], lowest_price=lowest_price,
                             duration_days=item['DURATION'], departure=TravelMarketScanner.parse_date(item['DEPARTUREDATE']))
             travels.append(travel)
 
         return travels
+
+    def get_alias(self):
+        return "Travelmarket"
 
     def scan(self):
         all_travels = []
@@ -98,13 +112,10 @@ class TravelMarketScanner(Scanner):
         while True:
             travels = self.get_travels(current_page)
 
-            if len(travels) == 0:
+            if travels is None or len(travels) == 0:
                 break
             else:
                 [all_travels.append(travel) for travel in travels]
                 current_page = current_page + 1
 
-        for travel in all_travels:
-            print(travel)
-
-        print("Found {0} travels.".format(len(all_travels)))
+        return all_travels

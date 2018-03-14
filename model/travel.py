@@ -1,5 +1,6 @@
 class Travel(object):
-    def __init__(self, vendor="Unknown", country="Unknown", hotel_name="Unknown", hotel_stars=None, lowest_price=None, area="Unknown", duration_days=None, departure=None):
+    def __init__(self, scanner, vendor="Unknown", country="Unknown", hotel_name="Unknown", hotel_stars=None, lowest_price=None, area="Unknown", duration_days=None, departure=None):
+        self.scanner = scanner
         self.vendor = vendor
         self.country = country
         self.hotel_name = hotel_name
@@ -9,6 +10,9 @@ class Travel(object):
         self.tripadvisor_rating = None
         self.duration_days = duration_days
         self.departure = departure
+
+    def get_hash(self):
+        return (self.hotel_name, self.country, self.scanner.get_alias()).__hash__()
 
     def get_tripadvisor_rating(self):
         pass

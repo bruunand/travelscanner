@@ -1,7 +1,6 @@
-import scanners
 from agent import Agent
+from model.travel_options import Airports, Countries
 from scanners.travelmarket import TravelMarketScanner
-from travel_options import Airports, Countries
 
 agent = Agent()
 options = agent.get_travel_options()
@@ -10,7 +9,8 @@ options = agent.get_travel_options()
 options.departure_airports = [Airports.AALBORG, Airports.BILLUND, Airports.COPENHAGEN]
 options.destination_countries = [Countries.SPAIN, Countries.GREECE]
 options.set_earliest_departure_date('27/04/2018')
-options.max_price = 3000
+options.max_price = 10000
+options.number_of_guests = 2
 
 # Add scanners
 agent.add_scanner(TravelMarketScanner())

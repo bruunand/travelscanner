@@ -1,5 +1,5 @@
-from scanner import Scanner, log_on_failure
-from travel_options import Airports
+from model.travel_options import Airports
+from scanners.scanner import Scanner, log_on_failure
 
 
 class SpiesScanner(Scanner):
@@ -8,6 +8,9 @@ class SpiesScanner(Scanner):
 
         self.airport_dictionary = {Airports.AALBORG: "503274", Airports.BILLUND: "499708",
                                    Airports.COPENHAGEN: "500055"}
+
+    def get_alias(self):
+        return "Spies"
 
     @log_on_failure
     def scan(self):

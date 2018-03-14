@@ -44,6 +44,9 @@ class TravelOptions(object):
         self.minimum_tripadvisor_rating = None
         self.all_inclusive = False
 
+        # Guest information
+        self.number_of_guests = None
+
     def set_earliest_departure_date(self, date_string):
         self.earliest_departure_date = datetime.strptime(date_string, '%d/%m/%Y')
         delta_time = datetime.today() - self.earliest_departure_date

@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from travel_options import Airports, Countries
 
 
 def get_default_if_none(value, default):
@@ -30,7 +29,7 @@ def join_values(keys, dictionary, separator):
 def log_on_failure(func):
     def wrapper(*args, **kwargs):
         try:
-            func(*args, **kwargs)
+            return func(*args, **kwargs)
         except Exception as exception:
             print("Error in {0}: {1}".format(func.__qualname__, exception))
 
@@ -46,6 +45,10 @@ class Scanner(metaclass=ABCMeta):
         # Dictionaries used to convert values by different platforms
         self.airport_dictionary = {}
         self.country_dictionary = {}
+
+    @abstractmethod
+    def get_alias(self):
+        pass
 
     @abstractmethod
     def scan(self):
