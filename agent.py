@@ -35,6 +35,7 @@ class Agent(object):
                 break
             else:
                 for travel in travels:
-                    print(travel.get_hash())
+                    if (travel.hotel_stars > 4 and travel.get_lowest_price() <= 5000):
+                        print(travel)
 
                 sleep(self.scan_interval.total_seconds())

@@ -7,7 +7,7 @@ from logging import getLogger
 from model.travel import Travel
 from model.travel_options import Airports, Countries
 from scanners.scanner import Scanner, join_values, log_on_failure, get_default_if_none
-
+from model.price import Price
 
 class TravelMarketScanner(Scanner):
     BaseUrl = "https://www.travelmarket.dk/"
@@ -62,6 +62,7 @@ class TravelMarketScanner(Scanner):
     def get_max_price(self):
         return get_default_if_none(self.get_options().max_price, 0)
 
+    @staticmethod
     def parse_date(date):
         return datetime.strptime(date, TravelMarketScanner.DateFormat)
 
@@ -86,19 +87,21 @@ class TravelMarketScanner(Scanner):
 
     @log_on_failure
     def get_travels(self, page):
-        travels = []
+        travels = set()
         result = json.loads(self.post(page).text)
 
         for item in result['HOTELS']:
-            lowest_price = None
-            for price in item['PRICES']:
-                if lowest_price is None or price['PRICE'] < lowest_price:
-                    lowest_price = price['PRICE']
+            prices = []
 
-            travel = Travel(self, country=item['COUNTRY'], vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
-                            area=item['DESTINATION'], hotel_stars=item['STARS'], lowest_price=lowest_price,
-                            duration_days=item['DURATION'], departure=TravelMarketScanner.parse_date(item['DEPARTUREDATE']))
-            travels.append(travel)
+            # Get all prices associated with this travel
+            for price in item['PRICES']:
+                prices.append(Price(price['PRICE'], price['ISALLINCLUSIVE'] == 0, price['MEALTYPE']))
+
+            travel = Travel(self, prices, country=item['COUNTRY'], hotel_name=item['HOTELNAME'], departure_airport=item['DEPARTURE'],
+                            area=item['DESTINATION'], hotel_stars=item['STARS'], vendor=item['COMPANY']['NAME'],
+                            duration_days=item['DURATION'], departure_date=TravelMarketScanner.parse_date(item['DEPARTUREDATE']))
+
+            travels.add(travel)
 
         return travels
 
@@ -106,16 +109,20 @@ class TravelMarketScanner(Scanner):
         return "Travelmarket"
 
     def scan(self):
-        all_travels = []
+        # Some travels appear twice on different pages
+        # By using a set, we avoid duplicates
+        all_travels = set()
         current_page = 1
 
         while True:
             travels = self.get_travels(current_page)
-
+            
             if travels is None or len(travels) == 0:
                 break
             else:
-                [all_travels.append(travel) for travel in travels]
+                [all_travels.add(travel) for travel in travels]
                 current_page = current_page + 1
+
+        print(len(all_travels))
 
         return all_travels
