@@ -1,9 +1,10 @@
-from enum import Enum
+from enum import Enum, IntEnum
 from datetime import datetime
-from errors import DateExceededException
+from travelscanner.errors import DateExceededException
 
 
-class Countries(Enum):
+class Countries(IntEnum):
+    UNKNOWN = 0
     CAPE_VERDE = 1
     CROATIA = 2
     CYPRUS = 3
@@ -18,7 +19,8 @@ class Countries(Enum):
     UNITED_KINGDOM = 12
 
 
-class Airports(Enum):
+class Airports(IntEnum):
+    UNKNOWN = 0
     AALBORG = 1
     BILLUND = 2
     COPENHAGEN = 3
