@@ -27,7 +27,7 @@ class Travel(object):
         return lowest_price
 
     def __hash__(self):
-        return hash((self.hotel_name, self.country, self.area, self.departure_date, self.departure_airport))
+        return hash((self.hotel_name, self.country, self.area, self.departure_date, self.departure_airport, self.scanner.get_alias()))
     
     def __str__(self):
         return f"{self.hotel_name} in {self.area}, {self.country} for {self.get_lowest_price()} DKK. {self.duration_days} days departing on {self.departure_date} from {self.departure_airport}."
