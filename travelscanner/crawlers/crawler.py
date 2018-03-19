@@ -10,6 +10,9 @@ def get_default_if_none(value, default):
 
 def validate_dictionary(source, needles, haystack):
     """Used to validate whether requested entities (airports or countries) are supported by a certain scanner."""
+    if needles is None:
+        return
+
     for item in needles:
         if not haystack.__contains__(item):
             getLogger().warning(f"Skipping {item}, not supported by {source.__class__.__name__}")

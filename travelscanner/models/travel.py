@@ -1,15 +1,15 @@
-from peewee import CharField, IntegerField, FloatField, PrimaryKeyField
+from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, TextField
 
 from travelscanner.data.database import DateField
-from travelscanner.models.metamodel import MetaModel
+from travelscanner.models.meta import CrawledModel
 
 
-class Travel(MetaModel):
+class Travel(CrawledModel):
     id = PrimaryKeyField()
     crawler = IntegerField()
     vendor = CharField()
     hotel_name = CharField()
-    country = CharField()  # Should probably be an enum for consistency
+    country = IntegerField()
     area = CharField()
     hotel_stars = IntegerField()
     duration_days = IntegerField()
@@ -22,12 +22,16 @@ class Travel(MetaModel):
     prices = []
 
     def __hash__(self):
-        return hash((self.hotel_name, self.country, self.departure_date, self.departure_airport, self.crawler))
+        return hash(
+            (self.hotel_name, self.area, self.country, self.departure_date, self.departure_airport, self.crawler,
+             self.guests, self.duration_days, self.hotel_stars, self.vendor))
 
     def save_or_update(self):
-        existing = Travel.select().where(Travel.departure_airport == self.departure_airport,
-                                         Travel.departure_date == self.departure_date, Travel.country == self.country,
-                                         Travel.hotel_name == self.hotel_name, Travel.crawler == self.crawler).first()
+        existing = Travel.select().where(
+            Travel.departure_airport == self.departure_airport, Travel.guests == self.guests,
+            Travel.departure_date == self.departure_date, Travel.country == self.country,
+            Travel.hotel_name == self.hotel_name, Travel.crawler == self.crawler,
+            Travel.duration_days == self.duration_days).first()
 
         if existing is None:
             self.save()
@@ -39,5 +43,5 @@ class Travel(MetaModel):
         super().save(force_insert, only)
 
         for price in self.prices:
-            price.travel = self.id
+            price.travel = self
             price.save_or_update()

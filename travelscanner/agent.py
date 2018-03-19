@@ -1,6 +1,8 @@
 from datetime import timedelta
 from time import sleep
 
+from logging import getLogger
+
 from travelscanner.errors import NoCrawlersException
 from travelscanner.options.travel_options import TravelOptions
 
@@ -9,7 +11,7 @@ class Agent(object):
     def __init__(self):
         self.crawlers = []
         self.travel_options = TravelOptions()
-        self.crawl_interval = timedelta(seconds=5)
+        self.crawl_interval = timedelta(minutes=5)
 
     def get_travel_options(self):
         return self.travel_options
@@ -29,12 +31,16 @@ class Agent(object):
             travels = set()
 
             for crawler in self.crawlers:
-                travels.update(set(crawler.crawl()))
+                travels.update(crawler.crawl())
 
             if self.crawl_interval is None:
                 break
             else:
+                getLogger().info(f"Saving {len(travels)} travels")
+
                 for travel in travels:
                     travel.save_or_update()
+
+                getLogger().info(f"Saving complete")
 
                 sleep(self.crawl_interval.total_seconds())

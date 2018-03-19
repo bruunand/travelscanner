@@ -16,7 +16,21 @@ class Countries(IntEnum):
     PORTUGAL = 9
     SPAIN = 10
     THAILAND = 11
-    UNITED_KINGDOM = 12
+    UK = 12
+    LATVIA = 13
+    GERMANY = 14
+    BELGIUM = 15
+    TURKEY = 16
+    POLAND = 17
+    AUSTRIA = 18
+    HUNGARY = 19
+    CZECH_REPUBLIC = 20
+    NETHERLANDS = 21
+    USA = 22
+    UAE = 23
+    IRELAND = 24
+    HONG_KONG = 25,
+    SWEDEN = 26,
 
 
 class Airports(IntEnum):
@@ -26,6 +40,16 @@ class Airports(IntEnum):
     COPENHAGEN = 3
 
 
+class MealTypes(IntEnum):
+    UNKNOWN = 0
+    NONE = 1
+    NOT_SPECIFIED = 2
+    BREAKFAST = 3
+    HALF_BOARD = 4
+    FULL_BOARD = 5
+    ALL_INCLUSIVE = 6
+
+
 class TravelOptions(object):
     def __init__(self):
         # Price information
@@ -33,13 +57,13 @@ class TravelOptions(object):
         self.max_price = None
 
         # Country information
-        self.destination_countries = []
-        self.departure_airports = []
+        self.destination_countries = None
+        self.departure_airports = None
 
         # Date and duration information
         self.earliest_departure_date = datetime.today()
         self.maximum_days_from_departure = None
-        self.duration_days = 7
+        self.duration_days = None
 
         # Hotel information
         self.minimum_hotel_stars = None
