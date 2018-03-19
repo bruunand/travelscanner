@@ -3,3 +3,4 @@ scikit-learn
 requests
 peewee
 pymysql
+keras

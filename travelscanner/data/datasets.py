@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 
 from travelscanner.models.price import Price
 from travelscanner.models.travel import Travel
+from travelscanner.options.travel_options import Countries
 
 
 def load_prices():
@@ -15,7 +16,7 @@ def load_prices():
 
     # Initialize arrays
     n_samples = joint_prices.count()
-    n_features = 9
+    n_features = 10
 
     data = np.empty((n_samples, n_features))
     target = np.empty((n_samples,))
@@ -31,6 +32,7 @@ def load_prices():
         data[i][5] = d.hotel_stars
         data[i][7] = (d.departure_date - today).days  # distance (in days) from current day
         data[i][8] = d.departure_date.month  # todo: is in season?
+        data[i][9] = d.departure_date.isocalendar()[1]  # week number
 
         # Set target value
         target[i] = d.price.price
