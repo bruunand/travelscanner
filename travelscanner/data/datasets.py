@@ -1,7 +1,6 @@
 from datetime import *
 
 import numpy as np
-from sklearn.utils import Bunch
 
 from travelscanner.models.price import Price
 from travelscanner.models.travel import Travel
@@ -29,10 +28,10 @@ def load_prices():
         data[i][3] = d.country
         data[i][4] = d.guests
         data[i][5] = d.hotel_stars
-        data[i][7] = (d.departure_date - today).days
-        data[i][8] = d.departure_date.month
+        data[i][7] = (d.departure_date - today).days  # distance (in days) from current day
+        data[i][8] = d.departure_date.month  # todo: is in season?
 
         # Set target value
         target[i] = d.price.price
 
-    return Bunch(data=data, target=target)
+    return data, target

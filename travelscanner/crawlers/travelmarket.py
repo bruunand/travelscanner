@@ -107,7 +107,18 @@ class Travelmarket(Crawler):
                                          'Sverige': Countries.SWEDEN,
                                          'Marokko': Countries.MOROCCO,
                                          'Israel': Countries.ISRAEL,
-                                         'Montenegro': Countries.MONTENEGRO
+                                         'Montenegro': Countries.MONTENEGRO,
+                                         'Island': Countries.ICELAND,
+                                         'Indonesien': Countries.INDONESIA,
+                                         'Japan': Countries.JAPAN,
+                                         'Malaysia': Countries.MALAYSIA,
+                                         'Den dominikanske republik': Countries.DOMINICAN_REPUBLIC,
+                                         'Tanzania': Countries.TANZANIA,
+                                         'Mauritius': Countries.MAURITIUS,
+                                         'Maldives': Countries.MALDIVES,
+                                         'Sri Lanka': Countries.SRI_LANKA,
+                                         'Mexico': Countries.MEXICO,
+                                         'Seychellerne': Countries.SEYCHELLES
                                          }, Countries.UNKNOWN)
 
     @staticmethod

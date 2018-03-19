@@ -34,6 +34,17 @@ class Countries(IntEnum):
     MOROCCO = 27,
     ISRAEL = 28,
     MONTENEGRO = 29,
+    ICELAND = 30,
+    TANZANIA = 31,
+    INDONESIA = 32,
+    JAPAN = 33
+    SRI_LANKA = 34,
+    DOMINICAN_REPUBLIC = 35,
+    MAURITIUS = 36,
+    MEXICO = 37,
+    MALDIVES = 38,
+    MALAYSIA = 39,
+    SEYCHELLES = 40
 
 
 class Airports(IntEnum):

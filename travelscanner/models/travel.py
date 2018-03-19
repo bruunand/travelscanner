@@ -2,6 +2,7 @@ from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, TextFie
 
 from travelscanner.data.database import DateField
 from travelscanner.models.meta import CrawledModel
+from travelscanner.options.travel_options import Countries
 
 
 class Travel(CrawledModel):
@@ -27,6 +28,9 @@ class Travel(CrawledModel):
              self.guests, self.duration_days, self.hotel_stars, self.vendor))
 
     def save_or_update(self):
+        if self.country == Countries.UNKNOWN:
+            return
+
         existing = Travel.select().where(
             Travel.departure_airport == self.departure_airport, Travel.guests == self.guests,
             Travel.departure_date == self.departure_date, Travel.country == self.country,
