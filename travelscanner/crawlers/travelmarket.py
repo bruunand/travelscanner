@@ -104,7 +104,10 @@ class Travelmarket(Crawler):
                                          'Irland': Countries.IRELAND,
                                          'Hong Kong': Countries.HONG_KONG,
                                          'Thailand': Countries.THAILAND,
-                                         'Sverige': Countries.SWEDEN
+                                         'Sverige': Countries.SWEDEN,
+                                         'Marokko': Countries.MOROCCO,
+                                         'Israel': Countries.ISRAEL,
+                                         'Montenegro': Countries.MONTENEGRO
                                          }, Countries.UNKNOWN)
 
     @staticmethod
@@ -121,6 +124,7 @@ class Travelmarket(Crawler):
                                          'Halvpension': MealTypes.HALF_BOARD,
                                          'Uden pension': MealTypes.NONE,
                                          'All Inclusive': MealTypes.ALL_INCLUSIVE,
+                                         'Helpension': MealTypes.FULL_BOARD,
                                          '': MealTypes.NONE}, MealTypes.UNKNOWN)
 
     @staticmethod

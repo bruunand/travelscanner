@@ -31,6 +31,9 @@ class Countries(IntEnum):
     IRELAND = 24
     HONG_KONG = 25,
     SWEDEN = 26,
+    MOROCCO = 27,
+    ISRAEL = 28,
+    MONTENEGRO = 29,
 
 
 class Airports(IntEnum):
