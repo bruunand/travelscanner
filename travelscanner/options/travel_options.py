@@ -29,22 +29,32 @@ class Countries(IntEnum):
     USA = 22
     UAE = 23
     IRELAND = 24
-    HONG_KONG = 25,
-    SWEDEN = 26,
-    MOROCCO = 27,
-    ISRAEL = 28,
-    MONTENEGRO = 29,
-    ICELAND = 30,
-    TANZANIA = 31,
-    INDONESIA = 32,
+    HONG_KONG = 25
+    SWEDEN = 26
+    MOROCCO = 27
+    ISRAEL = 28
+    MONTENEGRO = 29
+    ICELAND = 30
+    TANZANIA = 31
+    INDONESIA = 32
     JAPAN = 33
-    SRI_LANKA = 34,
-    DOMINICAN_REPUBLIC = 35,
-    MAURITIUS = 36,
-    MEXICO = 37,
-    MALDIVES = 38,
-    MALAYSIA = 39,
+    SRI_LANKA = 34
+    DOMINICAN_REPUBLIC = 35
+    MAURITIUS = 36
+    MEXICO = 37
+    MALDIVES = 38
+    MALAYSIA = 39
     SEYCHELLES = 40
+    BULGARIA = 41
+    LITHUANIA = 42
+    SINGAPORE = 43
+    VIETNAM = 44
+    CUBA = 45
+    BARBADOS = 46
+    BRAZIL = 47
+    INDIA = 48
+    ARUBA = 49
+    TUNISIA = 50
 
 
 class Airports(IntEnum):
@@ -62,6 +72,19 @@ class MealTypes(IntEnum):
     HALF_BOARD = 4
     FULL_BOARD = 5
     ALL_INCLUSIVE = 6
+
+
+class RoomTypes(IntEnum):
+    UNKNOWN = 0
+    APARTMENT = 1
+    DOUBLE_ROOM = 2
+    ECONOMY = 3
+    STANDARD_ROOM = 4
+    FAMILY = 5
+    TWO_PERSON_ROOM = 6
+    PREMIUM = 7
+    TENT = 8
+    BUNGALOW = 9
 
 
 class TravelOptions(object):

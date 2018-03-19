@@ -10,7 +10,7 @@ from learning.plot import show_plot
 def create_model():
     # Create a sequential model
     model = Sequential()
-    model.add(Dense(16, input_dim=10, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(16, input_dim=12, kernel_initializer='normal', activation='relu'))
     model.add(Dense(8, kernel_initializer='normal', activation='relu'))
     model.add(Dense(1, kernel_initializer='normal', activation='relu'))
 

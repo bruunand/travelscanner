@@ -1,4 +1,4 @@
-from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, TextField
+from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField
 
 from travelscanner.data.database import DateField
 from travelscanner.models.meta import CrawledModel
@@ -18,6 +18,7 @@ class Travel(CrawledModel):
     departure_airport = IntegerField(null=True)
     tripadvisor_rating = FloatField(null=True, default=None)
     guests = IntegerField(default=2)
+    has_pool = BooleanField()
 
     # Non-fields, used when saving
     prices = []

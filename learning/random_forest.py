@@ -1,5 +1,5 @@
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import mean_absolute_error
 
 from learning.plot import show_plot
 from travelscanner.data.datasets import load_prices, split_set
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     random_forest.fit(x_train, y_train)
 
     # Print feature importances
-    print(random_forest.feature_importances_.sort())
+    print(random_forest.feature_importances_)
 
     # Print MSE from predicted values
     y_pred = random_forest.predict(x_test)

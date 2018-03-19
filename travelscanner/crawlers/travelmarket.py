@@ -5,7 +5,7 @@ import requests
 from logging import getLogger
 
 from travelscanner.models.travel import Travel
-from travelscanner.options.travel_options import Airports, Countries, MealTypes
+from travelscanner.options.travel_options import Airports, Countries, MealTypes, RoomTypes
 from travelscanner.crawlers.crawler import Crawler, join_values, log_on_failure, get_default_if_none, Crawlers
 from travelscanner.models.price import Price
 
@@ -115,10 +115,21 @@ class Travelmarket(Crawler):
                                          'Den dominikanske republik': Countries.DOMINICAN_REPUBLIC,
                                          'Tanzania': Countries.TANZANIA,
                                          'Mauritius': Countries.MAURITIUS,
-                                         'Maldives': Countries.MALDIVES,
+                                         'Maldiverne': Countries.MALDIVES,
                                          'Sri Lanka': Countries.SRI_LANKA,
                                          'Mexico': Countries.MEXICO,
-                                         'Seychellerne': Countries.SEYCHELLES
+                                         'Seychellerne': Countries.SEYCHELLES,
+                                         'Bulgarien': Countries.BULGARIA,
+                                         'Litauen': Countries.LITHUANIA,
+                                         'Kroatien': Countries.CROATIA,
+                                         'Vietnam': Countries.VIETNAM,
+                                         'Singapore': Countries.SINGAPORE,
+                                         'Cuba': Countries.CUBA,
+                                         'Barbados': Countries.BARBADOS,
+                                         'Brasilien': Countries.BRAZIL,
+                                         'Indien': Countries.INDIA,
+                                         'Aruba': Countries.ARUBA,
+                                         'Tunesien': Countries.TUNISIA
                                          }, Countries.UNKNOWN)
 
     @staticmethod
@@ -135,8 +146,35 @@ class Travelmarket(Crawler):
                                          'Halvpension': MealTypes.HALF_BOARD,
                                          'Uden pension': MealTypes.NONE,
                                          'All Inclusive': MealTypes.ALL_INCLUSIVE,
+                                         'All Inclusive med drikkevarer': MealTypes.ALL_INCLUSIVE,
                                          'Helpension': MealTypes.FULL_BOARD,
                                          '': MealTypes.NONE}, MealTypes.UNKNOWN)
+
+    '''Not the best approach to take here, but the names are not consistent in any way.'''
+    @staticmethod
+    def parse_room_type(name):
+        name = name.lower()
+
+        if 'dobbelt' in name or 'double' in name:
+            return RoomTypes.DOUBLE_ROOM
+        elif 'studio' in name or 'apart' in name or 'lejl' in name:
+            return RoomTypes.APARTMENT
+        elif 'std' in name or 'enkelt' in name or 'stand' in name:
+            return RoomTypes.STANDARD_ROOM
+        elif 'economy' in name:
+            return RoomTypes.ECONOMY
+        elif 'fam' in name:
+            return RoomTypes.FAMILY
+        elif '2 pers' in name:
+            return RoomTypes.TWO_PERSON_ROOM
+        elif 'suite' in name or 'panoramic' in name or 'deluxe' in name or 'superior' in name or 'premium' in name:
+            return RoomTypes.PREMIUM
+        elif 'telt' in name:
+            return RoomTypes.TENT
+        elif 'bungalow' in name:
+            return RoomTypes.BUNGALOW
+
+        return RoomTypes.UNKNOWN
 
     @staticmethod
     def parse(value, dictionary, default=None):
@@ -176,13 +214,15 @@ class Travelmarket(Crawler):
 
             for price in item['PRICES']:
                 prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
-                                 meal=Travelmarket.parse_meal_type(price['MEALTYPE']), data_dump=price))
+                                 meal=Travelmarket.parse_meal_type(price['MEALTYPE']), data_dump=price,
+                                 room=Travelmarket.parse_room_type(price['ROOMTYPE'])))
 
             # Instantiate and add travel
             travels.add(Travel(crawler=self.get_id(), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
                                country=Travelmarket.parse_country(item['COUNTRY']), area=item['DESTINATION'],
                                hotel_stars=item['STARS'], duration_days=item['DURATION'], data_dump=item,
                                departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']),
+                               has_pool=item['HASPOOL'] == 1,
                                departure_airport=Travelmarket.parse_airport(item['DEPARTURE']), prices=prices))
 
         return travels

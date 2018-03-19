@@ -10,6 +10,7 @@ class Price(CrawledModel):
     meal = IntegerField()
     all_inclusive = BooleanField(default=False)
     travel = ForeignKeyField(Travel)
+    room = IntegerField()
 
     def __hash__(self):
         return hash((self.price, self.meal, self.all_inclusive))

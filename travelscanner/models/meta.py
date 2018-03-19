@@ -1,6 +1,6 @@
 from datetime import datetime
-from peewee import Model, DateTimeField
-from travelscanner.data.database import Database, TextField
+from peewee import Model, DateTimeField, TextField
+from travelscanner.data.database import Database
 
 
 class MetaModel(Model):

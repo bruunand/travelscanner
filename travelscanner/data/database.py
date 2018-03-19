@@ -6,6 +6,7 @@ class Database(object):
 
     def __init__(self, driver):
         self.driver = driver
+        self.cache = set()
 
     @staticmethod
     def get_instance():
