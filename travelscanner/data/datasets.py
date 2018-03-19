@@ -1,6 +1,7 @@
 from datetime import *
 
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 from travelscanner.models.price import Price
 from travelscanner.models.travel import Travel
@@ -35,3 +36,9 @@ def load_prices():
         target[i] = d.price.price
 
     return data, target
+
+
+def split_set(set, test_ratio=0.8):
+    x, y = set
+
+    return train_test_split(x, y, train_size=int(len(x) * test_ratio), random_state=4)

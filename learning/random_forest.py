@@ -1,17 +1,16 @@
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
 
-from travelscanner.data.datasets import load_prices
+from travelscanner.data.datasets import load_prices, split_set
 
 if __name__ == "__main__":
-    X, y = load_prices()
+    x_train, x_test, y_train, y_test = split_set(load_prices())
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=int(len(X) * 0.75), random_state=4)
-
+    # Fit random forest model to data
     random_forest = RandomForestRegressor()
-    random_forest.fit(X_train, y_train)
+    random_forest.fit(x_train, y_train)
 
-    y_pred = random_forest.predict(X_test)
+    # Print MSE from predicted values
+    y_pred = random_forest.predict(x_test)
 
-    print(r2_score(y_pred, y_test))
+    print(mean_squared_error(y_pred, y_test))
