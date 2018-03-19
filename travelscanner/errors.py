@@ -3,10 +3,10 @@ class DateExceededException(Exception):
         self.delta_time = delta_time
 
     def __str__(self):
-        return "Departure date exceeded by {0} days.".format(self.delta_time.days)
+        return f"Departure date exceeded by {self.delta_time.days} days."
 
 
-class NoScannersException(Exception):
+class NoCrawlersException(Exception):
     pass
 
 
