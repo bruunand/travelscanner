@@ -13,7 +13,7 @@ class Price(CrawledModel):
     room = IntegerField()
 
     def __hash__(self):
-        return hash((self.price, self.meal, self.all_inclusive))
+        return hash((self.price, self.meal, self.all_inclusive, self.travel))
 
     def save_or_update(self):
         existing = Price.select().where(Price.travel == self.travel, Price.all_inclusive == self.all_inclusive,

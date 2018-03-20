@@ -25,12 +25,16 @@ def get_dnn_regressor(features):
     return KerasRegressor(build_fn=create_model, epochs=5, batch_size=25)
 
 
+def get_random_forest():
+    return RandomForestRegressor(n_estimators=100, max_depth=64)
+
+
 if __name__ == "__main__":
     x, y, n_features = load_prices()
 
     # Add models to dictionary
     models = {'Linear': LinearRegression(),
-              'RandomForest': RandomForestRegressor(n_estimators=100, max_depth=64),
+              'RandomForest': get_random_forest(),
               'Lasso': Lasso(alpha=0.1),
               'AdaBoost': AdaBoostRegressor(),
               'Bagging': BaggingRegressor(),

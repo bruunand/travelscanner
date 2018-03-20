@@ -129,7 +129,9 @@ class Travelmarket(Crawler):
                                          'Brasilien': Countries.BRAZIL,
                                          'Indien': Countries.INDIA,
                                          'Aruba': Countries.ARUBA,
-                                         'Tunesien': Countries.TUNISIA
+                                         'Tunesien': Countries.TUNISIA,
+                                         'Kap Verde Øerne': Countries.CAPE_VERDE,
+                                         'Jordan': Countries.JORDAN
                                          }, Countries.UNKNOWN)
 
     @staticmethod
@@ -150,7 +152,7 @@ class Travelmarket(Crawler):
                                          'Helpension': MealTypes.FULL_BOARD,
                                          '': MealTypes.NONE}, MealTypes.UNKNOWN)
 
-    '''Not the best approach to take here, but the names are not consistent in any way.'''
+    '''Not the prettiest approach to take here, but the names are not consistent in any way.'''
     @staticmethod
     def parse_room_type(name):
         name = name.lower()
@@ -209,21 +211,22 @@ class Travelmarket(Crawler):
         result = json.loads(self.post(page).text)
 
         for item in result['HOTELS']:
-            # Instantiate prices associated with this travel
-            prices = set()
-
-            for price in item['PRICES']:
-                prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
-                                 meal=Travelmarket.parse_meal_type(price['MEALTYPE']), data_dump=price,
-                                 room=Travelmarket.parse_room_type(price['ROOMTYPE'])))
-
             # Instantiate and add travel
-            travels.add(Travel(crawler=self.get_id(), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
-                               country=Travelmarket.parse_country(item['COUNTRY']), area=item['DESTINATION'],
-                               hotel_stars=item['STARS'], duration_days=item['DURATION'], data_dump=item,
-                               departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']),
-                               has_pool=item['HASPOOL'] == 1,
-                               departure_airport=Travelmarket.parse_airport(item['DEPARTURE']), prices=prices))
+            travel = Travel(crawler=self.get_id(), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
+                            country=Travelmarket.parse_country(item['COUNTRY']), area=item['DESTINATION'],
+                            hotel_stars=item['STARS'], duration_days=item['DURATION'], data_dump=item,
+                            departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']),
+                            has_pool=item['HASPOOL'] == 1,
+                            departure_airport=Travelmarket.parse_airport(item['DEPARTURE']))
+
+            # Add prices
+            for price in item['PRICES']:
+                travel.prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
+                                        meal=Travelmarket.parse_meal_type(price['MEALTYPE']), data_dump=price,
+                                        room=Travelmarket.parse_room_type(price['ROOMTYPE']), travel=travel))
+
+            # Add travel
+            travels.add(travel)
 
         return travels
 

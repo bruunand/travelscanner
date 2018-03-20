@@ -55,6 +55,7 @@ class Countries(IntEnum):
     INDIA = 48
     ARUBA = 49
     TUNISIA = 50
+    JORDAN = 51
 
 
 class Airports(IntEnum):

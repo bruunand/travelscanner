@@ -21,7 +21,7 @@ class Travel(CrawledModel):
     has_pool = BooleanField()
 
     # Non-fields, used when saving
-    prices = []
+    prices = set()
 
     def __hash__(self):
         return hash(

@@ -38,8 +38,10 @@ class Agent(object):
             else:
                 getLogger().info(f"Saving {len(travels)} travels")
 
-                for travel in travels:
+                for i, travel in enumerate(travels):
                     travel.save_or_update()
+
+                    getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
 
                 getLogger().info(f"Saving complete")
 
