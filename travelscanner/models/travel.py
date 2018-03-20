@@ -1,11 +1,11 @@
 from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField
 
 from travelscanner.data.database import DateField
-from travelscanner.models.meta import CrawledModel
+from travelscanner.models.meta import MetaModel
 from travelscanner.options.travel_options import Countries
 
 
-class Travel(CrawledModel):
+class Travel(MetaModel):
     id = PrimaryKeyField()
     crawler = IntegerField()
     vendor = CharField()

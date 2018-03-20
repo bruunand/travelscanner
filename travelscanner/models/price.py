@@ -1,10 +1,10 @@
 from peewee import *
 
-from travelscanner.models.meta import CrawledModel
+from travelscanner.models.meta import MetaModel
 from travelscanner.models.travel import Travel
 
 
-class Price(CrawledModel):
+class Price(MetaModel):
     id = PrimaryKeyField()
     price = FloatField()
     meal = IntegerField()

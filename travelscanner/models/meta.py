@@ -1,5 +1,7 @@
 from datetime import datetime
-from peewee import Model, DateTimeField, TextField
+
+from peewee import Model, DateTimeField
+
 from travelscanner.data.database import Database
 
 
@@ -14,6 +16,3 @@ class MetaModel(Model):
     class Meta:
         database = Database.get_driver()
 
-
-class CrawledModel(MetaModel):
-    data_dump = TextField(null=True)

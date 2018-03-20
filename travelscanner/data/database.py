@@ -9,6 +9,10 @@ class Database(object):
         self.cache = set()
 
     @staticmethod
+    def get_cache():
+        return Database.get_instance().cache
+
+    @staticmethod
     def get_instance():
         if Database.instance is None:
             Database.instance = Database(MySQLDatabase('travelscanner', user='root', password='planner'))

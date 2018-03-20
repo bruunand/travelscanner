@@ -214,7 +214,7 @@ class Travelmarket(Crawler):
             # Instantiate and add travel
             travel = Travel(crawler=self.get_id(), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
                             country=Travelmarket.parse_country(item['COUNTRY']), area=item['DESTINATION'],
-                            hotel_stars=item['STARS'], duration_days=item['DURATION'], data_dump=item,
+                            hotel_stars=item['STARS'], duration_days=item['DURATION'],
                             departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']),
                             has_pool=item['HASPOOL'] == 1,
                             departure_airport=Travelmarket.parse_airport(item['DEPARTURE']))
@@ -222,7 +222,7 @@ class Travelmarket(Crawler):
             # Add prices
             for price in item['PRICES']:
                 travel.prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
-                                        meal=Travelmarket.parse_meal_type(price['MEALTYPE']), data_dump=price,
+                                        meal=Travelmarket.parse_meal_type(price['MEALTYPE']),
                                         room=Travelmarket.parse_room_type(price['ROOMTYPE']), travel=travel))
 
             # Add travel
