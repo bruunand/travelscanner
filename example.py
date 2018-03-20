@@ -10,7 +10,7 @@ if __name__ == '__main__':
     options.departure_airports = [Airports.AALBORG, Airports.BILLUND, Airports.COPENHAGEN]
     options.destination_countries = None
     options.set_earliest_departure_date('21/07/2018')
-    options.max_price = None
+    options.max_price = 15000
     options.number_of_guests = 2
     options.duration_days = None
     options.maximum_days_from_departure = 3

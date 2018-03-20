@@ -10,20 +10,20 @@ from learning.plot import show_plot
 def create_model():
     # Create a sequential model
     model = Sequential()
-    model.add(Dense(16, input_dim=12, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(8, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(1, kernel_initializer='normal', activation='relu'))
+    model.add(Dense(256, input_dim=15, kernel_initializer='normal', activation='linear'))
+    model.add(Dense(128, kernel_initializer='normal', activation='linear'))
+    model.add(Dense(1, kernel_initializer='normal', activation='linear'))
 
     # Compile model
-    model.compile(loss="mean_absolute_error", optimizer="adam")
+    model.compile(loss="mean_absolute_error", optimizer="rmsprop")
     return model
 
 
 if __name__ == "__main__":
-    x_train, x_test, y_train, y_test = split_set(load_prices())
+    x_train, x_test, y_train, y_test, n_samples = split_set(load_prices())
 
     # Train model
-    estimator = KerasRegressor(build_fn=create_model, epochs=5, batch_size=5, verbose=1)
+    estimator = KerasRegressor(build_fn=create_model, epochs=5, batch_size=25, verbose=1)
     estimator.fit(x_train, y_train)
 
     # Print MSE from predicted values

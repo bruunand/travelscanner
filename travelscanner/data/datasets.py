@@ -11,11 +11,11 @@ def load_prices():
     today = date.today()
 
     # Get data from database with join query
-    joined_prices = Travel.select(Travel, Price).join(Price)
+    joined_prices = Travel.select(Travel, Price).join(Price).where(Price.price < 15000)
 
     # Initialize arrays
     n_samples = joined_prices.count()
-    n_features = 13
+    n_features = 15
 
     data = np.empty((n_samples, n_features))
     target = np.empty((n_samples,))
@@ -35,6 +35,8 @@ def load_prices():
         data[i][10] = d.departure_airport
         data[i][11] = d.has_pool
         data[i][12] = d.price.room
+        data[i][13] = d.departure_date.weekday()
+        data[i][14] = d.departure_date.day
 
         # Set target value
         target[i] = d.price.price
