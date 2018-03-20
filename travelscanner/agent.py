@@ -39,9 +39,10 @@ class Agent(object):
                 getLogger().info(f"Saving {len(travels)} travels")
 
                 for i, travel in enumerate(travels):
-                    travel.save_or_update()
+                    travel.upsert()
 
-                    getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
+                    if i % 10 == 0:
+                        getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
 
                 getLogger().info(f"Saving complete")
 

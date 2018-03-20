@@ -57,12 +57,18 @@ class Countries(IntEnum):
     TUNISIA = 50
     JORDAN = 51
 
+    def __int__(self):
+        return self.value
+
 
 class Airports(IntEnum):
     UNKNOWN = 0
     AALBORG = 1
     BILLUND = 2
     COPENHAGEN = 3
+
+    def __int__(self):
+        return self.value
 
 
 class MealTypes(IntEnum):
@@ -73,6 +79,9 @@ class MealTypes(IntEnum):
     HALF_BOARD = 4
     FULL_BOARD = 5
     ALL_INCLUSIVE = 6
+
+    def __int__(self):
+        return self.value
 
 
 class RoomTypes(IntEnum):
@@ -86,6 +95,9 @@ class RoomTypes(IntEnum):
     PREMIUM = 7
     TENT = 8
     BUNGALOW = 9
+
+    def __int__(self):
+        return self.value
 
 
 class TravelOptions(object):

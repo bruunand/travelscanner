@@ -1,5 +1,6 @@
 from peewee import *
 
+from travelscanner.data.database import Database
 from travelscanner.models.meta import MetaModel
 from travelscanner.models.travel import Travel
 
@@ -13,11 +14,10 @@ class Price(MetaModel):
     room = IntegerField()
 
     def __hash__(self):
-        return hash((self.price, self.meal, self.all_inclusive, self.travel))
+        return hash((self.price, self.meal, self.all_inclusive, self.travel, self.travel))
 
-    def save_or_update(self):
-        existing = Price.select().where(Price.travel == self.travel, Price.all_inclusive == self.all_inclusive,
-                                        Price.meal == self.meal, self.price == self.price).first()
+    def upsert(self):
+        existing = Database.retrieve_from_cache(self)
 
         if existing is None:
             self.save()

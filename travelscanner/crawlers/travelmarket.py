@@ -185,7 +185,7 @@ class Travelmarket(Crawler):
         if ret_val is default:
             getLogger().warning(f"Unable to parse {value} in {Travelmarket.__name__}.")
 
-        return ret_val
+        return int(ret_val)
 
     def synthesize_filters(self, page):
         filters = dict(bSpecified=True, bUnSpecified=False, strKeyDestination="", sHotelName="",
@@ -212,7 +212,7 @@ class Travelmarket(Crawler):
 
         for item in result['HOTELS']:
             # Instantiate and add travel
-            travel = Travel(crawler=self.get_id(), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
+            travel = Travel(crawler=int(self.get_id()), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
                             country=Travelmarket.parse_country(item['COUNTRY']), area=item['DESTINATION'],
                             hotel_stars=item['STARS'], duration_days=item['DURATION'],
                             departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']),
@@ -224,11 +224,10 @@ class Travelmarket(Crawler):
                 travel.prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
                                         meal=Travelmarket.parse_meal_type(price['MEALTYPE']),
                                         room=Travelmarket.parse_room_type(price['ROOMTYPE']), travel=travel))
-
             # Add travel
             travels.add(travel)
 
-        return travels
+            return travels
 
     def get_id(self):
         return Crawlers.TRAVELMARKET
@@ -247,4 +246,4 @@ class Travelmarket(Crawler):
 
                 current_page = current_page + 1
 
-        return all_travels
+            return all_travels

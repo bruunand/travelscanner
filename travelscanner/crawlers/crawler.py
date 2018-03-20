@@ -44,6 +44,9 @@ class Crawlers(IntEnum):
     SPIES = 1,
     AFBUDSREJSER = 2
 
+    def __int__(self):
+        return self.value
+
 
 class Crawler(metaclass=ABCMeta):
     BaseHeaders = {"User-Agent": None}

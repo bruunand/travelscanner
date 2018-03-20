@@ -6,11 +6,17 @@ class Database(object):
 
     def __init__(self, driver):
         self.driver = driver
-        self.cache = set()
+        self.cache = dict()
 
     @staticmethod
-    def get_cache():
-        return Database.get_instance().cache
+    def retrieve_from_cache(obj):
+        cache = Database.get_instance().cache
+
+        ret_val = cache.get(hash(obj), None)
+        if ret_val is None:
+            cache[hash(obj)] = obj
+
+        return ret_val
 
     @staticmethod
     def get_instance():

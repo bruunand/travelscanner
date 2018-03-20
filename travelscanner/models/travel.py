@@ -1,6 +1,6 @@
 from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField
 
-from travelscanner.data.database import DateField
+from travelscanner.data.database import DateField, Database
 from travelscanner.models.meta import MetaModel
 from travelscanner.options.travel_options import Countries
 
@@ -20,23 +20,19 @@ class Travel(MetaModel):
     guests = IntegerField(default=2)
     has_pool = BooleanField()
 
-    # Non-fields, used when saving
-    prices = set()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.prices = set()
 
     def __hash__(self):
-        return hash(
-            (self.hotel_name, self.area, self.country, self.departure_date, self.departure_airport, self.crawler,
-             self.guests, self.duration_days, self.hotel_stars, self.vendor))
+        return hash((self.hotel_name, self.area, self.country, self.departure_date, self.departure_airport,
+                     self.crawler, self.guests, self.duration_days, self.hotel_stars, self.vendor))
 
-    def save_or_update(self):
+    def upsert(self):
         if self.country == Countries.UNKNOWN:
             return
 
-        existing = Travel.select().where(
-            Travel.departure_airport == self.departure_airport, Travel.guests == self.guests,
-            Travel.departure_date == self.departure_date, Travel.country == self.country,
-            Travel.hotel_name == self.hotel_name, Travel.crawler == self.crawler,
-            Travel.duration_days == self.duration_days).first()
+        existing = Database.retrieve_from_cache(self)
 
         if existing is None:
             self.save()
@@ -49,4 +45,4 @@ class Travel(MetaModel):
 
         for price in self.prices:
             price.travel = self
-            price.save_or_update()
+            price.upsert()
