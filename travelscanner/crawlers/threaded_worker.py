@@ -7,7 +7,6 @@ def crawl_multi_threaded(crawl_function, start_page, max_workers=5):
 
     while True:
         workers = []
-        initial_length = len(ret_travels)
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for i in range(0, max_workers):

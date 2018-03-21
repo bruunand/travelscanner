@@ -108,7 +108,7 @@ class Travelmarket(Crawler):
             result = self.post(page)
             data = json.loads(result.text)
         except JSONDecodeError as error:
-            getLogger().error(f"Unable to parse JSON: {result.response_code}, {result.text}")
+            getLogger().error(f"Unable to parse JSON ({result.status_code}): {result.text}")
 
             return travels
 
