@@ -1,3 +1,4 @@
+from logging import getLogger
 from peewee import *
 
 
@@ -7,6 +8,19 @@ class Database(object):
     def __init__(self, driver):
         self.driver = driver
         self.cache = dict()
+
+    @staticmethod
+    def save_travels(travels):
+        getLogger().info(f"Saving {len(travels)} travels")
+
+        with Database.get_driver().atomic():
+            for i, travel in enumerate(travels):
+                travel.upsert()
+
+                if i % 50 == 0 or i == len(travels) - 1:
+                    getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
+
+        getLogger().info(f"Saving complete")
 
     @staticmethod
     def retrieve_from_cache(obj):
