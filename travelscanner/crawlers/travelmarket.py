@@ -131,7 +131,9 @@ class Travelmarket(Crawler):
                                          'Aruba': Countries.ARUBA,
                                          'Tunesien': Countries.TUNISIA,
                                          'Kap Verde Øerne': Countries.CAPE_VERDE,
-                                         'Jordan': Countries.JORDAN
+                                         'Jordan': Countries.JORDAN,
+                                         'Jamaica': Countries.JAMAICA,
+                                         'Hollandske Antiller': Countries.NETHERLANDS_ANTILLES,
                                          }, Countries.UNKNOWN)
 
     @staticmethod
@@ -167,7 +169,7 @@ class Travelmarket(Crawler):
             return RoomTypes.ECONOMY
         elif 'fam' in name:
             return RoomTypes.FAMILY
-        elif '2 pers' in name:
+        elif '2' in name:
             return RoomTypes.TWO_PERSON_ROOM
         elif 'suite' in name or 'panoramic' in name or 'deluxe' in name or 'superior' in name or 'premium' in name:
             return RoomTypes.PREMIUM

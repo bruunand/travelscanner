@@ -56,6 +56,8 @@ class Countries(IntEnum):
     ARUBA = 49
     TUNISIA = 50
     JORDAN = 51
+    JAMAICA = 52
+    NETHERLANDS_ANTILLES = 53
 
     def __hash__(self):
         return self.value

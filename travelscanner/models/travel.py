@@ -29,6 +29,7 @@ class Travel(MetaModel):
                      self.crawler, self.guests, self.duration_days, self.hotel_stars, self.vendor))
 
     def upsert(self):
+        # Skip entries which have no country specified
         if self.country == Countries.UNKNOWN:
             return
 
