@@ -6,7 +6,9 @@ from logging import getLogger
 from travelscanner.errors import DateExceededException
 
 
-def parse(value, dictionary, default=None):
+def parse(value, dictionary, default=None, strip=True):
+    if strip:
+        value = value.strip()
     ret_val = dictionary.get(value, default)
 
     if ret_val is default:
@@ -224,6 +226,9 @@ class Vendors(IntEnum):
     PRIMO_TOURS = 17
     FOLKEFERIE = 18
     TRIPX = 19
+    TURISTREJSER = 20
+    APOLLO = 21
+    ALMENA_TRAVEL = 22
 
     @staticmethod
     def parse_da(name):
@@ -245,7 +250,10 @@ class Vendors(IntEnum):
                             'Balkan Holidays': Vendors.BALKAN_HOLIDAYS,
                             'Primo Tours': Vendors.PRIMO_TOURS,
                             'FolkeFerie.dk': Vendors.FOLKEFERIE,
-                            'TripX': Vendors.TRIPX}, Vendors.UNKNOWN)
+                            'TripX': Vendors.TRIPX,
+                            'Turistrejser': Vendors.TURISTREJSER,
+                            'Apollo': Vendors.APOLLO,
+                            'Almena Travel': Vendors.ALMENA_TRAVEL}, Vendors.UNKNOWN)
 
 
 class TravelOptions(object):

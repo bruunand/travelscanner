@@ -109,13 +109,14 @@ class Travelmarket(Crawler):
                             hotel_stars=item['STARS'], duration_days=item['DURATION'],
                             departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']).date(),
                             has_pool=item['HASPOOL'] == 1, hotel_name=item['HOTELNAME'],
-                            departure_airport=Airports.parse_da(item['DEPARTURE']))
+                            departure_airport=Airports.parse_da(item['DEPARTURE']),
+                            has_childpool=item['HASCHILDPOOL'] == 1)
 
             # Add prices
             for price in item['PRICES']:
                 travel.prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
-                                        meal=MealTypes.parse_da(price['MEALTYPE']),
-                                        room=RoomTypes.parse_da(price['ROOMTYPE']), travel=travel))
+                                        room=RoomTypes.parse_da(price['ROOMTYPE']), travel=travel,
+                                        meal=MealTypes.parse_da(price['MEALTYPE'])))
             # Add travel
             travels.add(travel)
 

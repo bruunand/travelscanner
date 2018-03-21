@@ -40,3 +40,5 @@ class Agent(object):
                 Database.save_travels(travels)
 
                 sleep(self.crawl_interval.total_seconds())
+
+            return

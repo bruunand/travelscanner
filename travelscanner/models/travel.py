@@ -8,7 +8,7 @@ from travelscanner.options.travel_options import Countries
 class Travel(MetaModel):
     id = PrimaryKeyField()
     crawler = IntegerField()
-    vendor = CharField()
+    vendor = IntegerField()
     hotel_name = CharField()
     country = IntegerField()
     area = CharField()
@@ -19,6 +19,7 @@ class Travel(MetaModel):
     tripadvisor_rating = FloatField(null=True, default=None)
     guests = IntegerField(default=2)
     has_pool = BooleanField()
+    has_childpool = BooleanField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
