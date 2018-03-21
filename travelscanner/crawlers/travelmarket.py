@@ -1,9 +1,11 @@
 import json
 from datetime import datetime
+from json import JSONDecodeError
 
 import requests
 from logging import getLogger
 
+from travelscanner.crawlers.threaded_worker import crawl_multi_threaded
 from travelscanner.models.travel import Travel
 from travelscanner.options.travel_options import Airports, Countries, MealTypes, RoomTypes, Vendors
 from travelscanner.crawlers.crawler import Crawler, join_values, log_on_failure, get_default_if_none, Crawlers
@@ -30,7 +32,7 @@ class Travelmarket(Crawler):
 
         # Warn about options that cannot be satisfied
         if not self.get_options().number_of_guests is None:
-            getLogger().warning(f"Number of guests option cannot be satisfied by {self.__class__.__name__}.")
+            getLogger().warning(f"Number of guests option cannot be satisfied by {self.__class__.__name__}")
 
     def get_duration(self):
         duration_days = self.get_options().duration_days
@@ -99,10 +101,18 @@ class Travelmarket(Crawler):
 
     @log_on_failure
     def get_travels(self, page):
-        travels = set()
-        result = json.loads(self.post(page).text)
+        getLogger().info(f"Crawling page {page}")
 
-        for item in result['HOTELS']:
+        travels = set()
+        try:
+            result = self.post(page)
+            data = json.loads(result.text)
+        except JSONDecodeError as error:
+            getLogger().error(f"Unable to parse JSON: {result.response_code}, {result.text}")
+
+            return travels
+
+        for item in data['HOTELS']:
             # Instantiate and add travel
             travel = Travel(crawler=int(self.get_id()), vendor=Vendors.parse_da(item['COMPANY']['NAME']),
                             country=Countries.parse_da(item['COUNTRY']), area=item['DESTINATION'],
@@ -126,17 +136,5 @@ class Travelmarket(Crawler):
         return Crawlers.TRAVELMARKET
 
     def crawl(self):
-        all_travels = set()
-        current_page = 1
+        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=5)
 
-        while True:
-            travels = self.get_travels(current_page)
-
-            if travels is None or len(travels) == 0:
-                break
-            else:
-                all_travels.update(travels)
-
-                current_page = current_page + 1
-
-        return all_travels
