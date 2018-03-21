@@ -1,5 +1,3 @@
-from datetime import *
-
 import numpy as np
 from sklearn.model_selection import train_test_split
 
@@ -8,8 +6,6 @@ from travelscanner.models.travel import Travel
 
 
 def load_prices():
-    today = date.today()
-
     # Get data from database with join query
     joined_prices = Travel.select(Travel, Price).join(Price).where(Price.price < 20000)
 
@@ -27,7 +23,7 @@ def load_prices():
         # Set features
         data[i] = [d.price.all_inclusive, d.price.meal, d.duration_days, d.country, d.guests, d.hotel_stars,
                    (d.departure_date - d.price.created_at.date()).days, d.departure_date.month,
-                   d.departure_date.isocalendar()[1], d.departure_airport, d.has_pool d.has_childpool, d.price.room,
+                   d.departure_date.isocalendar()[1], d.departure_airport, d.has_pool, d.has_childpool, d.price.room,
                    d.departure_date.weekday(), d.departure_date.day, d.vendor]
 
         # Set target value

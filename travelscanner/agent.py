@@ -1,8 +1,6 @@
 from datetime import timedelta
 from time import sleep
 
-from logging import getLogger
-
 from travelscanner.data.database import Database
 from travelscanner.errors import NoCrawlersException
 from travelscanner.options.travel_options import TravelOptions
