@@ -17,7 +17,7 @@ class Database(object):
             for i, travel in enumerate(travels):
                 travel.upsert()
 
-                if i % 50 == 0 or i == len(travels) - 1:
+                if i % 100 == 0 or i + 1 == len(travels):
                     getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
 
         getLogger().info(f"Saving complete")

@@ -5,7 +5,7 @@ import requests
 from logging import getLogger
 
 from travelscanner.models.travel import Travel
-from travelscanner.options.travel_options import Airports, Countries, MealTypes, RoomTypes
+from travelscanner.options.travel_options import Airports, Countries, MealTypes, RoomTypes, Vendors
 from travelscanner.crawlers.crawler import Crawler, join_values, log_on_failure, get_default_if_none, Crawlers
 from travelscanner.models.price import Price
 
@@ -79,116 +79,6 @@ class Travelmarket(Crawler):
     def parse_date(date):
         return datetime.strptime(date, Travelmarket.DateFormat)
 
-    @staticmethod
-    def parse_country(name):
-        return Travelmarket.parse(name, {'Spanien': Countries.SPAIN,
-                                         'Grækenland': Countries.GREECE,
-                                         'Cypern': Countries.CYPRUS,
-                                         'Tyskland': Countries.GERMANY,
-                                         'Letland': Countries.LATVIA,
-                                         'Østrig': Countries.AUSTRIA,
-                                         'Polen': Countries.POLAND,
-                                         'Belgien': Countries.BELGIUM,
-                                         'Storbritannien': Countries.UK,
-                                         'Tyrkiet': Countries.TURKEY,
-                                         'Frankrig': Countries.FRANCE,
-                                         'Ungarn': Countries.HUNGARY,
-                                         'Egypten': Countries.EGYPT,
-                                         'Italien': Countries.ITALY,
-                                         'Tjekkiet': Countries.CZECH_REPUBLIC,
-                                         'Holland': Countries.NETHERLANDS,
-                                         'USA': Countries.USA,
-                                         'Malta': Countries.MALTA,
-                                         'Forenede Arabiske Emirater': Countries.UAE,
-                                         'Portugal': Countries.PORTUGAL,
-                                         'Irland': Countries.IRELAND,
-                                         'Hong Kong': Countries.HONG_KONG,
-                                         'Thailand': Countries.THAILAND,
-                                         'Sverige': Countries.SWEDEN,
-                                         'Marokko': Countries.MOROCCO,
-                                         'Israel': Countries.ISRAEL,
-                                         'Montenegro': Countries.MONTENEGRO,
-                                         'Island': Countries.ICELAND,
-                                         'Indonesien': Countries.INDONESIA,
-                                         'Japan': Countries.JAPAN,
-                                         'Malaysia': Countries.MALAYSIA,
-                                         'Den dominikanske republik': Countries.DOMINICAN_REPUBLIC,
-                                         'Tanzania': Countries.TANZANIA,
-                                         'Mauritius': Countries.MAURITIUS,
-                                         'Maldiverne': Countries.MALDIVES,
-                                         'Sri Lanka': Countries.SRI_LANKA,
-                                         'Mexico': Countries.MEXICO,
-                                         'Seychellerne': Countries.SEYCHELLES,
-                                         'Bulgarien': Countries.BULGARIA,
-                                         'Litauen': Countries.LITHUANIA,
-                                         'Kroatien': Countries.CROATIA,
-                                         'Vietnam': Countries.VIETNAM,
-                                         'Singapore': Countries.SINGAPORE,
-                                         'Cuba': Countries.CUBA,
-                                         'Barbados': Countries.BARBADOS,
-                                         'Brasilien': Countries.BRAZIL,
-                                         'Indien': Countries.INDIA,
-                                         'Aruba': Countries.ARUBA,
-                                         'Tunesien': Countries.TUNISIA,
-                                         'Kap Verde Øerne': Countries.CAPE_VERDE,
-                                         'Jordan': Countries.JORDAN,
-                                         'Jamaica': Countries.JAMAICA,
-                                         'Hollandske Antiller': Countries.NETHERLANDS_ANTILLES,
-                                         }, Countries.UNKNOWN)
-
-    @staticmethod
-    def parse_airport(name):
-        return Travelmarket.parse(name, {'København': Airports.COPENHAGEN,
-                                         'Aalborg': Airports.AALBORG,
-                                         'Billund': Airports.BILLUND
-                                         }, Airports.UNKNOWN)
-
-    @staticmethod
-    def parse_meal_type(name):
-        return Travelmarket.parse(name, {'Ikke angivet': MealTypes.NOT_SPECIFIED,
-                                         'Med morgenmad': MealTypes.BREAKFAST,
-                                         'Halvpension': MealTypes.HALF_BOARD,
-                                         'Uden pension': MealTypes.NONE,
-                                         'All Inclusive': MealTypes.ALL_INCLUSIVE,
-                                         'All Inclusive med drikkevarer': MealTypes.ALL_INCLUSIVE,
-                                         'Helpension': MealTypes.FULL_BOARD,
-                                         '': MealTypes.NONE}, MealTypes.UNKNOWN)
-
-    '''Not the prettiest approach to take here, but the names are not consistent in any way.'''
-    @staticmethod
-    def parse_room_type(name):
-        name = name.lower()
-
-        if 'dobbelt' in name or 'double' in name:
-            return RoomTypes.DOUBLE_ROOM
-        elif 'studio' in name or 'apart' in name or 'lejl' in name:
-            return RoomTypes.APARTMENT
-        elif 'std' in name or 'enkelt' in name or 'stand' in name:
-            return RoomTypes.STANDARD_ROOM
-        elif 'economy' in name:
-            return RoomTypes.ECONOMY
-        elif 'fam' in name:
-            return RoomTypes.FAMILY
-        elif '2' in name:
-            return RoomTypes.TWO_PERSON_ROOM
-        elif 'suite' in name or 'panoramic' in name or 'deluxe' in name or 'superior' in name or 'premium' in name:
-            return RoomTypes.PREMIUM
-        elif 'telt' in name:
-            return RoomTypes.TENT
-        elif 'bungalow' in name:
-            return RoomTypes.BUNGALOW
-
-        return RoomTypes.UNKNOWN
-
-    @staticmethod
-    def parse(value, dictionary, default=None):
-        ret_val = dictionary.get(value, default)
-
-        if ret_val is default:
-            getLogger().warning(f"Unable to parse {value} in {Travelmarket.__name__}.")
-
-        return int(ret_val)
-
     def synthesize_filters(self, page):
         filters = dict(bSpecified=True, bUnSpecified=False, strKeyDestination="", sHotelName="",
                        bAllinclusive=self.get_all_inclusive(), flexdays=self.get_flex_days(),
@@ -214,18 +104,18 @@ class Travelmarket(Crawler):
 
         for item in result['HOTELS']:
             # Instantiate and add travel
-            travel = Travel(crawler=int(self.get_id()), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
-                            country=Travelmarket.parse_country(item['COUNTRY']), area=item['DESTINATION'],
+            travel = Travel(crawler=int(self.get_id()), vendor=Vendors.parse_da(item['COMPANY']['NAME']),
+                            country=Countries.parse_da(item['COUNTRY']), area=item['DESTINATION'],
                             hotel_stars=item['STARS'], duration_days=item['DURATION'],
                             departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']).date(),
-                            has_pool=item['HASPOOL'] == 1,
-                            departure_airport=Travelmarket.parse_airport(item['DEPARTURE']))
+                            has_pool=item['HASPOOL'] == 1, hotel_name=item['HOTELNAME'],
+                            departure_airport=Airports.parse_da(item['DEPARTURE']))
 
             # Add prices
             for price in item['PRICES']:
                 travel.prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
-                                        meal=Travelmarket.parse_meal_type(price['MEALTYPE']),
-                                        room=Travelmarket.parse_room_type(price['ROOMTYPE']), travel=travel))
+                                        meal=MealTypes.parse_da(price['MEALTYPE']),
+                                        room=RoomTypes.parse_da(price['ROOMTYPE']), travel=travel))
             # Add travel
             travels.add(travel)
 

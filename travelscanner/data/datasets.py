@@ -17,7 +17,7 @@ def load_prices():
     n_samples = joined_prices.count()
     features = ["All Inclusive", "Meal type", "Duration (days)", "Country", "Guests", "Hotel stars",
                 "Days until departure", "Month", "Week", "Departure airport", "Has pool", "Room type",
-                "Weekday", "Day"]
+                "Weekday", "Day", "Vendor"]
 
     data = np.empty((n_samples, len(features)))
     target = np.empty((n_samples,))
@@ -28,7 +28,7 @@ def load_prices():
         data[i] = [d.price.all_inclusive, d.price.meal, d.duration_days, d.country, d.guests, d.hotel_stars,
                    (d.departure_date - d.price.created_at.date()).days, d.departure_date.month,
                    d.departure_date.isocalendar()[1], d.departure_airport, d.has_pool, d.price.room,
-                   d.departure_date.weekday(), d.departure_date.day]
+                   d.departure_date.weekday(), d.departure_date.day, d.vendor]
 
         # Set target value
         target[i] = d.price.price

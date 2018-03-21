@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from enum import IntEnum
 from logging import getLogger
-
+from traceback import print_exc
 
 def get_default_if_none(value, default):
     """Returns the specified value unless it is none, in which case the specified default will be returned."""
@@ -36,14 +36,13 @@ def log_on_failure(func):
         except Exception as exception:
             getLogger().warning(f"Error in {func.__qualname__}: {exception}")
 
+            print_exc()
+
     return wrapper
 
 
 class Crawlers(IntEnum):
     TRAVELMARKET = 0
-
-    def __hash__(self):
-        return self.value
 
 
 class Crawler(metaclass=ABCMeta):
