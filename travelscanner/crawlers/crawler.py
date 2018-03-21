@@ -40,9 +40,10 @@ def log_on_failure(func):
 
 
 class Crawlers(IntEnum):
-    TRAVELMARKET = 0,
-    SPIES = 1,
-    AFBUDSREJSER = 2
+    TRAVELMARKET = 0
+
+    def __hash__(self):
+        return self.value
 
 
 class Crawler(metaclass=ABCMeta):

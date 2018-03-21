@@ -131,7 +131,9 @@ class Travelmarket(Crawler):
                                          'Aruba': Countries.ARUBA,
                                          'Tunesien': Countries.TUNISIA,
                                          'Kap Verde Øerne': Countries.CAPE_VERDE,
-                                         'Jordan': Countries.JORDAN
+                                         'Jordan': Countries.JORDAN,
+                                         'Jamaica': Countries.JAMAICA,
+                                         'Hollandske Antiller': Countries.NETHERLANDS_ANTILLES,
                                          }, Countries.UNKNOWN)
 
     @staticmethod
@@ -167,7 +169,7 @@ class Travelmarket(Crawler):
             return RoomTypes.ECONOMY
         elif 'fam' in name:
             return RoomTypes.FAMILY
-        elif '2 pers' in name:
+        elif '2' in name:
             return RoomTypes.TWO_PERSON_ROOM
         elif 'suite' in name or 'panoramic' in name or 'deluxe' in name or 'superior' in name or 'premium' in name:
             return RoomTypes.PREMIUM
@@ -185,7 +187,7 @@ class Travelmarket(Crawler):
         if ret_val is default:
             getLogger().warning(f"Unable to parse {value} in {Travelmarket.__name__}.")
 
-        return ret_val
+        return int(ret_val)
 
     def synthesize_filters(self, page):
         filters = dict(bSpecified=True, bUnSpecified=False, strKeyDestination="", sHotelName="",
@@ -212,19 +214,18 @@ class Travelmarket(Crawler):
 
         for item in result['HOTELS']:
             # Instantiate and add travel
-            travel = Travel(crawler=self.get_id(), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
+            travel = Travel(crawler=int(self.get_id()), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
                             country=Travelmarket.parse_country(item['COUNTRY']), area=item['DESTINATION'],
-                            hotel_stars=item['STARS'], duration_days=item['DURATION'], data_dump=item,
-                            departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']),
+                            hotel_stars=item['STARS'], duration_days=item['DURATION'],
+                            departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']).date(),
                             has_pool=item['HASPOOL'] == 1,
                             departure_airport=Travelmarket.parse_airport(item['DEPARTURE']))
 
             # Add prices
             for price in item['PRICES']:
                 travel.prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
-                                        meal=Travelmarket.parse_meal_type(price['MEALTYPE']), data_dump=price,
+                                        meal=Travelmarket.parse_meal_type(price['MEALTYPE']),
                                         room=Travelmarket.parse_room_type(price['ROOMTYPE']), travel=travel))
-
             # Add travel
             travels.add(travel)
 

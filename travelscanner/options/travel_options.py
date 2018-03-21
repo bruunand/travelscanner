@@ -56,6 +56,11 @@ class Countries(IntEnum):
     ARUBA = 49
     TUNISIA = 50
     JORDAN = 51
+    JAMAICA = 52
+    NETHERLANDS_ANTILLES = 53
+
+    def __hash__(self):
+        return self.value
 
 
 class Airports(IntEnum):
@@ -63,6 +68,9 @@ class Airports(IntEnum):
     AALBORG = 1
     BILLUND = 2
     COPENHAGEN = 3
+
+    def __hash__(self):
+        return self.value
 
 
 class MealTypes(IntEnum):
@@ -73,6 +81,9 @@ class MealTypes(IntEnum):
     HALF_BOARD = 4
     FULL_BOARD = 5
     ALL_INCLUSIVE = 6
+
+    def __hash__(self):
+        return self.value
 
 
 class RoomTypes(IntEnum):
@@ -86,6 +97,9 @@ class RoomTypes(IntEnum):
     PREMIUM = 7
     TENT = 8
     BUNGALOW = 9
+
+    def __hash__(self):
+        return self.value
 
 
 class TravelOptions(object):

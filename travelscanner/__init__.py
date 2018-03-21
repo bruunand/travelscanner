@@ -14,3 +14,10 @@ Database.connect()
 # Create model tables
 #Database.get_driver().drop_tables([Price, Travel])
 #Database.get_driver().create_tables([Price, Travel])
+
+# Initialize cache
+for travel in Travel.select():
+    Database.retrieve_from_cache(travel)
+
+for price in Price.select():
+    Database.retrieve_from_cache(price)

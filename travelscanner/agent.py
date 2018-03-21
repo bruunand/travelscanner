@@ -3,6 +3,7 @@ from time import sleep
 
 from logging import getLogger
 
+from travelscanner.data.database import Database
 from travelscanner.errors import NoCrawlersException
 from travelscanner.options.travel_options import TravelOptions
 
@@ -36,13 +37,6 @@ class Agent(object):
             if self.crawl_interval is None:
                 break
             else:
-                getLogger().info(f"Saving {len(travels)} travels")
-
-                for i, travel in enumerate(travels):
-                    travel.save_or_update()
-
-                    getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
-
-                getLogger().info(f"Saving complete")
+                Database.save_travels(travels)
 
                 sleep(self.crawl_interval.total_seconds())

@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 from keras import Sequential
 from keras.layers import Dense
+
 from keras.wrappers.scikit_learn import KerasRegressor
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, BaggingRegressor
+from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, BaggingRegressor, GradientBoostingRegressor
 from sklearn.linear_model import LinearRegression, Lasso, BayesianRidge
 from sklearn.model_selection import cross_val_score, KFold
 from sklearn.neighbors import KNeighborsRegressor
@@ -14,32 +15,32 @@ def get_dnn_regressor(features):
     def create_model():
         # Create a sequential model
         dnn_model = Sequential()
-        dnn_model.add(Dense(256, input_dim=features, kernel_initializer='normal', activation='linear'))
-        dnn_model.add(Dense(128, kernel_initializer='normal', activation='linear'))
-        dnn_model.add(Dense(1, kernel_initializer='normal', activation='linear'))
+        dnn_model.add(Dense(32, input_dim=features, kernel_initializer='normal', activation='relu'))
+        dnn_model.add(Dense(16, kernel_initializer='normal', activation='relu'))
+        dnn_model.add(Dense(1, kernel_initializer='normal', activation='relu'))
 
         # Compile model
-        dnn_model.compile(loss="mean_absolute_error", optimizer="rmsprop")
+        dnn_model.compile(loss="mean_absolute_error", optimizer="adam")
         return dnn_model
 
-    return KerasRegressor(build_fn=create_model, epochs=5, batch_size=25)
+    return KerasRegressor(build_fn=create_model, epochs=5, batch_size=10)
 
 
 def get_random_forest():
-    return RandomForestRegressor(n_estimators=100, max_depth=64)
+    return RandomForestRegressor(max_depth=64)
 
 
 if __name__ == "__main__":
-    x, y, n_features = load_prices()
+    x, y, feature_list = load_prices()
 
     # Add models to dictionary
-    models = {'Linear': LinearRegression(),
+    models = {'GradientBoosting': GradientBoostingRegressor(),
+              'Linear': LinearRegression(),
               'RandomForest': get_random_forest(),
               'Lasso': Lasso(alpha=0.1),
               'AdaBoost': AdaBoostRegressor(),
               'Bagging': BaggingRegressor(),
               'KNeighbors': KNeighborsRegressor(n_neighbors=5, weights='uniform'),
-              'DNN': get_dnn_regressor(n_features),
               'BayesianRidge': BayesianRidge()}
 
     # Compare models using 5-fold CV
