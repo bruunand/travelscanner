@@ -21,5 +21,3 @@ for travel in Travel.select():
 
 for price in Price.select():
     Database.retrieve_from_cache(price)
-
-print(f"Cache size: {len(Database.get_instance().cache)}")

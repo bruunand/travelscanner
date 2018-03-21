@@ -215,7 +215,7 @@ class Travelmarket(Crawler):
             travel = Travel(crawler=int(self.get_id()), vendor=item['COMPANY']['NAME'], hotel_name=item['HOTELNAME'],
                             country=Travelmarket.parse_country(item['COUNTRY']), area=item['DESTINATION'],
                             hotel_stars=item['STARS'], duration_days=item['DURATION'],
-                            departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']),
+                            departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']).date(),
                             has_pool=item['HASPOOL'] == 1,
                             departure_airport=Travelmarket.parse_airport(item['DEPARTURE']))
 
@@ -227,7 +227,7 @@ class Travelmarket(Crawler):
             # Add travel
             travels.add(travel)
 
-            return travels
+        return travels
 
     def get_id(self):
         return Crawlers.TRAVELMARKET
@@ -246,4 +246,4 @@ class Travelmarket(Crawler):
 
                 current_page = current_page + 1
 
-            return all_travels
+        return all_travels
