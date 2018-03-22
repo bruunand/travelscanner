@@ -1,4 +1,4 @@
-from peewee import IntegerField, CharField, FloatField
+from peewee import IntegerField, CharField, FloatField, CompositeKey
 
 from travelscanner.models.meta import MetaModel
 
@@ -8,3 +8,6 @@ class TripAdvisorRating(MetaModel):
     area = CharField()
     hotel_name = CharField()
     rating = FloatField()
+
+    class Meta:
+        primary_key = CompositeKey('country', 'area', 'hotel_name')

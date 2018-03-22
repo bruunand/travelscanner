@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from travelscanner.models.price import Price
+from travelscanner.models.price import Price, JOIN
 from travelscanner.models.travel import Travel
 from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 
@@ -10,12 +10,10 @@ def load_unscraped_hotels():
     ret_hotels = []
 
     # Select distinct hotel names and areas without rating
-    travels = Travel.select(Travel.hotel_name, Travel.area, Travel.country).distinct().where(
-        TripAdvisorRating.select().where(TripAdvisorRating.hotel_name == Travel.hotel_name,
-                                         TripAdvisorRating.area == Travel.area,
-                                         TripAdvisorRating.country == Travel.country).count() == 0)
+    travels = Travel.select(Travel.hotel_name, Travel.country, Travel.area).distinct().join(TripAdvisorRating, join_type=JOIN.LEFT_OUTER, on=((Travel.hotel_name == TripAdvisorRating.hotel_name) & (Travel.area == TripAdvisorRating.area) & (Travel.country == TripAdvisorRating.country))).where(TripAdvisorRating.rating.is_null(True))
+
     for travel in travels:
-        ret_hotels.append((travel.hotel_name, travel.area))
+        ret_hotels.append((travel.hotel_name, travel.area, travel.country))
 
     return ret_hotels
 
