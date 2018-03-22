@@ -13,4 +13,4 @@ if __name__ == "__main__":
 
     # Predict and plot result
     y_predict = dnn.predict(x_test)
-    plot_predicted_actual("DNN", y_predict, y_test)
+    plot_predicted_actual("DNN", y_test, y_predict)

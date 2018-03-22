@@ -17,4 +17,4 @@ if __name__ == "__main__":
 
     # Predict and plot result
     y_predict = rf.predict(x_test)
-    plot_predicted_actual("RandomForest", y_predict, y_test)
+    plot_predicted_actual("RandomForest", y_test, y_predict)

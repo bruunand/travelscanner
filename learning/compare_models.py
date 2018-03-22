@@ -24,7 +24,7 @@ def get_dnn_regressor(num_features):
         dnn_model.compile(loss="mean_squared_error", optimizer="adam")
         return dnn_model
 
-    return KerasRegressor(build_fn=create_model, epochs=10, batch_size=500)
+    return KerasRegressor(build_fn=create_model, epochs=20, batch_size=250)
 
 
 def get_random_forest():
