@@ -39,7 +39,7 @@ def get_hotel_url(query):
 
         return item['url']
 
-    print(f"No URL for {query} {returned:_get_result.text}")
+    print(f"No URL for {query} (returned: {get_result.text})")
 
     return None
 
@@ -73,12 +73,14 @@ if __name__ == "__main__":
     unscraped_hotels = load_unscraped_hotels()
     ratings = []
 
+    getLogger().info(f"Scraping {len(unscraped_hotels)} hotel reviews")
+
     # Distribute tasks to multiple workers
-    with ThreadPoolExecutor(max_workers=20) as executor:
+    with ThreadPoolExecutor(max_workers=50) as executor:
         for name, area, country in unscraped_hotels:
             executor.submit(add_rating, name, area, country, ratings)
 
-    getLogger().info("Scraping finished, saving results to database")
+    getLogger().info(f"Scraping finished, saving {len(ratings)} ratings to database")
 
     # All retrieved, now save to database
     with Database.get_driver().atomic():
