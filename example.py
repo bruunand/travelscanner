@@ -1,19 +1,18 @@
 from travelscanner.agent import Agent
 from travelscanner.crawlers.travelmarket import Travelmarket
+from travelscanner.data.database import Database
 from travelscanner.options.travel_options import Airports
 
 if __name__ == '__main__':
-    agent = Agent()
+    Database.initialize_cache()
 
     # Set options for our desired travel
+    agent = Agent()
     options = agent.get_travel_options()
     options.departure_airports = [Airports.AALBORG, Airports.BILLUND, Airports.COPENHAGEN]
-    options.destination_countries = None
-    options.set_earliest_departure_date('10/06/2018')
-    options.max_price = 15000
+    options.set_earliest_departure_date('26/07/2018')
     options.number_of_guests = 2
-    options.duration_days = None
-    options.maximum_days_from_departure = 5
+    options.max_days_from_departure = 3
 
     # Add crawlers
     agent.add_crawler(Travelmarket())

@@ -7,7 +7,7 @@ from travelscanner.models.travel import Travel
 
 def load_prices():
     # Get data from database with join query
-    joined_prices = Travel.select(Travel, Price).join(Price).where(Price.price < 20000)
+    joined_prices = Travel.select(Travel, Price).join(Price).where(Price.price < 15000)
 
     # Initialize arrays
     n_samples = joined_prices.count()

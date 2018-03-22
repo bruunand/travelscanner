@@ -136,5 +136,5 @@ class Travelmarket(Crawler):
         return Crawlers.TRAVELMARKET
 
     def crawl(self):
-        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=5)
+        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=20)
 

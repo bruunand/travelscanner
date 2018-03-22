@@ -259,6 +259,7 @@ class Vendors(IntEnum):
 class TravelOptions(object):
     def __init__(self):
         # Price information
+        self.max_days_from_departure = None
         self.min_price = None
         self.max_price = None
 
@@ -278,6 +279,9 @@ class TravelOptions(object):
 
         # Guest information
         self.number_of_guests = None
+
+    def increase_earliest_departure_date(self, timedelta):
+        self.earliest_departure_date = self.earliest_departure_date + timedelta
 
     def set_earliest_departure_date(self, date_string):
         self.earliest_departure_date = datetime.strptime(date_string, '%d/%m/%Y')

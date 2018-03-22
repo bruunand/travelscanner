@@ -1,4 +1,5 @@
 from logging import getLogger
+
 from peewee import *
 
 
@@ -8,6 +9,28 @@ class Database(object):
     def __init__(self, driver):
         self.driver = driver
         self.cache = dict()
+        self.has_initialized_cache = False
+
+    @staticmethod
+    def initialize_cache():
+        if Database.get_instance().has_initialized_cache:
+            return
+
+        from travelscanner.models.travel import Travel
+        from travelscanner.models.price import Price
+
+        # Initialize cache
+        getLogger().info("Initializing cache")
+
+        for travel in Travel.select():
+            Database.retrieve_from_cache(travel)
+
+        for price in Price.select():
+            Database.retrieve_from_cache(price)
+
+        getLogger().info(f"Loaded {len(Database.get_instance().cache)} elements into cache")
+
+        Database.get_instance().has_initialized_cache = True
 
     @staticmethod
     def save_travels(travels):
@@ -35,7 +58,7 @@ class Database(object):
     @staticmethod
     def get_instance():
         if Database.instance is None:
-            Database.instance = Database(MySQLDatabase('travelscanner', user='root', password=''))
+            Database.instance = Database(MySQLDatabase('travelscanner', user='root', password='planner'))
 
         return Database.instance
 

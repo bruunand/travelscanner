@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from peewee import Model, DateTimeField
+from peewee import DateTimeField, Model
 
 from travelscanner.data.database import Database
 
@@ -15,4 +15,3 @@ class MetaModel(Model):
 
     class Meta:
         database = Database.get_driver()
-

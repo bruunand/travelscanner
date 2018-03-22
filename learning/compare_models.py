@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from keras import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Dropout
 
 from keras.wrappers.scikit_learn import KerasRegressor
 from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, BaggingRegressor, GradientBoostingRegressor
@@ -11,19 +11,20 @@ from sklearn.neighbors import KNeighborsRegressor
 from travelscanner.data.datasets import load_prices
 
 
-def get_dnn_regressor(features):
+def get_dnn_regressor(num_features):
     def create_model():
         # Create a sequential model
         dnn_model = Sequential()
-        dnn_model.add(Dense(32, input_dim=features, kernel_initializer='normal', activation='relu'))
-        dnn_model.add(Dense(16, kernel_initializer='normal', activation='relu'))
-        dnn_model.add(Dense(1, kernel_initializer='normal', activation='relu'))
+        dnn_model.add(Dense(32, input_dim=num_features, kernel_initializer='normal', activation='relu'))
+        dnn_model.add(Dense(200, kernel_initializer='normal', activation='relu'))
+        dnn_model.add(Dense(256, kernel_initializer='normal', activation='relu'))
+        dnn_model.add(Dense(1, kernel_initializer='normal', activation='linear'))
 
         # Compile model
-        dnn_model.compile(loss="mean_absolute_error", optimizer="adam")
+        dnn_model.compile(loss="mean_squared_error", optimizer="adam")
         return dnn_model
 
-    return KerasRegressor(build_fn=create_model, epochs=5, batch_size=10)
+    return KerasRegressor(build_fn=create_model, epochs=10, batch_size=500)
 
 
 def get_random_forest():
@@ -41,7 +42,8 @@ if __name__ == "__main__":
               'AdaBoost': AdaBoostRegressor(),
               'Bagging': BaggingRegressor(),
               'KNeighbors': KNeighborsRegressor(n_neighbors=5, weights='uniform'),
-              'BayesianRidge': BayesianRidge()}
+              'BayesianRidge': BayesianRidge(),
+              'DNN': get_dnn_regressor(len(feature_list))}
 
     # Compare models using 5-fold CV
     results = {}

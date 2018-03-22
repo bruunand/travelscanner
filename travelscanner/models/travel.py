@@ -1,6 +1,6 @@
-from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField
+from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField, DateField
 
-from travelscanner.data.database import DateField, Database
+import travelscanner.data
 from travelscanner.models.meta import MetaModel
 from travelscanner.options.travel_options import Countries
 
@@ -34,7 +34,7 @@ class Travel(MetaModel):
         if self.country == Countries.UNKNOWN:
             return
 
-        existing = Database.retrieve_from_cache(self)
+        existing = travelscanner.Database.retrieve_from_cache(self)
 
         if existing is None:
             self.save()
