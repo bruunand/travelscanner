@@ -10,7 +10,11 @@ def load_unscraped_hotels():
     ret_hotels = []
 
     # Select distinct hotel names and areas without rating
-    travels = Travel.select(Travel.hotel_name, Travel.country, Travel.area).distinct().join(TripAdvisorRating, join_type=JOIN.LEFT_OUTER, on=((Travel.hotel_name == TripAdvisorRating.hotel_name) & (Travel.area == TripAdvisorRating.area) & (Travel.country == TripAdvisorRating.country))).where(TripAdvisorRating.rating.is_null(True))
+    travels = Travel.select(Travel.hotel_name, Travel.country, Travel.area).distinct(). \
+        join(TripAdvisorRating, join_type=JOIN.LEFT_OUTER, on=((Travel.hotel_name == TripAdvisorRating.hotel_name) &
+                                                               (Travel.area == TripAdvisorRating.area) &
+                                                               (Travel.country == TripAdvisorRating.country))) \
+        .where(TripAdvisorRating.rating.is_null(True))
 
     for travel in travels:
         ret_hotels.append((travel.hotel_name, travel.area, travel.country))

@@ -5,7 +5,7 @@ from json import JSONDecodeError
 import requests
 from logging import getLogger
 
-from travelscanner.crawlers.threaded_worker import crawl_multi_threaded
+from travelscanner.crawlers.threaded_crawler import crawl_multi_threaded
 from travelscanner.models.travel import Travel
 from travelscanner.options.travel_options import Airports, Countries, MealTypes, RoomTypes, Vendors
 from travelscanner.crawlers.crawler import Crawler, join_values, log_on_failure, get_default_if_none, Crawlers
