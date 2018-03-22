@@ -12,7 +12,7 @@ def parse(value, dictionary, default=None, strip=True):
     ret_val = dictionary.get(value, default)
 
     if ret_val is default:
-        getLogger().warning(f"Unable to parse {value}.")
+        getLogger().warning(f"Unable to parse {value}")
 
     return int(ret_val)
 

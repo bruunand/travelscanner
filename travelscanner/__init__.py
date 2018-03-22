@@ -16,8 +16,12 @@ Database.connect()
 #Database.get_driver().create_tables([Price, Travel])
 
 # Initialize cache
+logging.getLogger().info("Initializing cache")
+
 for travel in Travel.select():
     Database.retrieve_from_cache(travel)
 
 for price in Price.select():
     Database.retrieve_from_cache(price)
+
+logging.getLogger().info(f"Loaded {len(Database.get_instance().cache)} elements into cache")

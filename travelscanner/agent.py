@@ -1,8 +1,6 @@
 from datetime import timedelta
 from time import sleep
 
-from logging import getLogger
-
 from travelscanner.data.database import Database
 from travelscanner.errors import NoCrawlersException
 from travelscanner.options.travel_options import TravelOptions
@@ -39,6 +37,4 @@ class Agent(object):
             else:
                 Database.save_travels(travels)
 
-                sleep(self.crawl_interval.total_seconds())
-
-            return
+                return # todo sleep
