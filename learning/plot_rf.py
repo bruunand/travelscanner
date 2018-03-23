@@ -1,3 +1,5 @@
+from sklearn import preprocessing
+
 from learning.compare_models import get_random_forest
 from learning.plot import plot_predicted_actual
 from travelscanner.data.datasets import split_set, load_prices

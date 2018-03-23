@@ -9,14 +9,13 @@ class Travel(MetaModel):
     id = PrimaryKeyField()
     crawler = IntegerField()
     vendor = IntegerField()
-    hotel_name = CharField()
+    hotel = CharField()
     country = IntegerField()
     area = CharField()
     hotel_stars = IntegerField()
     duration_days = IntegerField()
     departure_date = DateField()
     departure_airport = IntegerField(null=True)
-    tripadvisor_rating = FloatField(null=True, default=None)
     guests = IntegerField(default=2)
     has_pool = BooleanField()
     has_childpool = BooleanField()
@@ -26,7 +25,7 @@ class Travel(MetaModel):
         self.prices = set()
 
     def __hash__(self):
-        return hash((self.hotel_name, self.area, self.country, self.departure_date, self.departure_airport,
+        return hash((self.hotel, self.area, self.country, self.departure_date, self.departure_airport,
                      self.crawler, self.guests, self.duration_days, self.hotel_stars, self.vendor))
 
     def upsert(self):
