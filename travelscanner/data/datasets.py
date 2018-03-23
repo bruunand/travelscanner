@@ -24,7 +24,7 @@ def load_unscraped_hotels():
 
 def load_prices():
     # Get data from database with join query
-    joined_prices = Travel.select(Travel, Price).join(TripAdvisorRating, on=(
+    joined_prices = Travel.select(Travel, Price, TripAdvisorRating).join(TripAdvisorRating, on=(
                 (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
                 (Travel.area == TripAdvisorRating.area))).switch(Travel).join(Price)
 
@@ -43,7 +43,7 @@ def load_prices():
         data[i] = [d.price.all_inclusive, d.price.meal, d.duration_days, d.country, d.guests, d.hotel_stars,
                    (d.departure_date - d.price.created_at.date()).days, d.departure_date.month,
                    d.departure_date.isocalendar()[1], d.departure_airport, d.has_pool, d.has_childpool, d.price.room,
-                   d.departure_date.weekday(), d.departure_date.day, d.vendor, d.tripadvisor_rating.rating]
+                   d.departure_date.weekday(), d.departure_date.day, d.vendor, d.tripadvisorrating.rating]
 
         # Set target value
         target[i] = d.price.price
