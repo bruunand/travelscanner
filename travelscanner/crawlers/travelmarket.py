@@ -108,7 +108,7 @@ class Travelmarket(Crawler):
             result = self.post(page)
             data = json.loads(result.text)
         except JSONDecodeError as error:
-            getLogger().error(f"Unable to parse JSON ({result.status_code}): {result.text}")
+            getLogger().error(f"Unable to parse JSON ({result.status_code}): {result.text}, {error}")
 
             return travels
 
@@ -118,7 +118,7 @@ class Travelmarket(Crawler):
                             country=Countries.parse_da(item['COUNTRY']), area=item['DESTINATION'],
                             hotel_stars=item['STARS'], duration_days=item['DURATION'],
                             departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']).date(),
-                            has_pool=item['HASPOOL'] == 1, hotel_name=item['HOTELNAME'],
+                            has_pool=item['HASPOOL'] == 1, hotel=item['HOTELNAME'],
                             departure_airport=Airports.parse_da(item['DEPARTURE']),
                             has_childpool=item['HASCHILDPOOL'] == 1)
 

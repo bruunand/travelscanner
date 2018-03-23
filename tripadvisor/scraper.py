@@ -1,16 +1,12 @@
+import re
 from concurrent.futures import ThreadPoolExecutor
-
+from json import loads
 from logging import getLogger
 
-from travelscanner.data.database import Database
-from travelscanner.data.datasets import load_unscraped_hotels
-
 from requests import get
-from json import loads
 
+from travelscanner.data.datasets import load_unscraped_hotels
 from travelscanner.models.tripadvisor_rating import TripAdvisorRating
-
-import re
 
 
 # Scraper for TripAdvisor hotel ratings
@@ -79,7 +75,7 @@ class Scraper:
         rating, review_count = self.get_rating(name, area)
 
         if rating is not None and review_count is not None:
-            TripAdvisorRating.create(country=country, hotel_name=name, area=area,
+            TripAdvisorRating.create(country=country, hotel=name, area=area,
                                      rating=rating, review_count=review_count).save()
 
     def scrape(self, unscraped_hotels):
