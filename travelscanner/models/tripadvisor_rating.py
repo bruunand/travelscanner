@@ -10,5 +10,8 @@ class TripAdvisorRating(MetaModel):
     rating = FloatField()
     review_count = IntegerField()
 
+    def __hash__(self):
+        return hash((self.country, self.area, self.hotel_name))
+
     class Meta:
         primary_key = CompositeKey('country', 'area', 'hotel_name')

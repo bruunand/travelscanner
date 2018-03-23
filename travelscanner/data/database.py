@@ -58,7 +58,7 @@ class Database(object):
     @staticmethod
     def get_instance():
         if Database.instance is None:
-            Database.instance = Database(MySQLDatabase('travelscanner', user='root', password=''))
+            Database.instance = Database(MySQLDatabase('travelscanner', user='root', password='planner'))
 
         return Database.instance
 

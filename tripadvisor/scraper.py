@@ -12,79 +12,89 @@ from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 
 import re
 
-BASE_URL = "https://www.tripadvisor.com"
-compiled = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
 
+# Scraper for TripAdvisor hotel ratings
+class Scraper:
+    BASE_URL = "https://www.tripadvisor.com"
+    COMPILED = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
 
-def normalize_name(name):
-    if '-' in name:
-        name = name.split('-')[0]
+    def __init__(self):
+        self.cancel_tasks = False
 
-    return name.lower().replace("lejligheder", "apartments").replace("hotel", "").strip()
+    @staticmethod
+    def normalize(string):
+        special_characters = [',', '-', '/']
 
+        for character in special_characters:
+            if character in string:
+                string = string.split(character)[0]
 
-def get_hotel_url(query):
-    payload = {'action': 'API', 'types': 'hotel', 'urlList': 'true', 'name_depth': '3', 'scoreThreshold': '0.3',
-               'typeahead1_5': 'true', 'query': query}
+        return string.lower().replace("lejligheder", "apartments").replace("hotel", "").strip()
 
-    # Get from API
-    get_result = get(f"{BASE_URL}/TypeAheadJson", params=payload, headers={'X-Requested-With': 'XMLHttpRequest'})
-    if not get_result.status_code == 200:
+    def get_hotel_url(self, query):
+        payload = {'action': 'API', 'types': 'hotel', 'urlList': 'true', 'name_depth': '3', 'scoreThreshold': '0.3',
+                   'typeahead1_5': 'true', 'query': query}
+
+        # Get from API
+        get_result = get(f"{Scraper.BASE_URL}/TypeAheadJson", params=payload,
+                         headers={'X-Requested-With': 'XMLHttpRequest'})
+        if not get_result.status_code == 200:
+            return None
+        json = loads(get_result.text)
+
+        for item in json['results']:
+            if not item['type'] == 'HOTEL':
+                continue
+
+            return item['url']
+
+        print(f"No URL for {query} (returned: {get_result.text})")
+
+        self.cancel_tasks = True
+
         return None
-    json = loads(get_result.text)
 
-    for item in json['results']:
-        if not item['type'] == 'HOTEL':
-            continue
+    def get_rating(self, name, area):
+        if self.cancel_tasks:
+            return None, None
 
-        return item['url']
+        url = self.get_hotel_url(f"{Scraper.normalize(name)} {Scraper.normalize(area)}")
 
-    print(f"No URL for {query} (returned: {get_result.text})")
+        if url is not None:
+            get_result = get(f"{Scraper.BASE_URL}{url}")
 
-    return None
+            if get_result.status_code == 200:
+                match = Scraper.COMPILED.search(get_result.text)
 
+                if match is not None:
+                    return float(match.group(1)), int(match.group(2))
+                else:
+                    return 3.0, 0
 
-def get_rating(name, area):
-    url = get_hotel_url(f"{normalize_name(name)} {area.lower().strip()}")
+            print(f"Could not get rating from URL {url}")
 
-    if url is not None:
-        get_result = get(f"{BASE_URL}{url}")
+        return None, None
 
-        if get_result.status_code == 200:
-            match = compiled.search(get_result.text)
+    def add_rating(self, name, area, country):
+        rating, review_count = self.get_rating(name, area)
 
-            if match is not None:
-                return float(match.group(1)), int(match.group(2))
+        if rating is not None and review_count is not None:
+            TripAdvisorRating.create(country=country, hotel_name=name, area=area,
+                                     rating=rating, review_count=review_count).save()
 
-        print(f"Could not get rating from URL {url}")
+    def scrape(self, unscraped_hotels):
+        self.cancel_tasks = False
 
-    return None, None
+        getLogger().info(f"Scraping {len(unscraped_hotels)} hotel reviews")
 
+        # Distribute tasks to multiple workers
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            for name, area, country in unscraped_hotels:
+                executor.submit(self.add_rating, name, area, country)
 
-def add_rating(name, area, country, destination_list):
-    rating, review_count = get_rating(name, area)
-
-    if rating is not None and review_count is not None:
-        destination_list.append(TripAdvisorRating.create(country=country, hotel_name=name, area=area,
-                                                         rating=rating, review_count=review_count))
+        getLogger().info(f"Scraping finished")
 
 
 if __name__ == "__main__":
-    unscraped_hotels = load_unscraped_hotels()
-    ratings = []
-
-    getLogger().info(f"Scraping {len(unscraped_hotels)} hotel reviews")
-
-    # Distribute tasks to multiple workers
-    with ThreadPoolExecutor(max_workers=50) as executor:
-        for name, area, country in unscraped_hotels:
-            executor.submit(add_rating, name, area, country, ratings)
-
-    getLogger().info(f"Scraping finished, saving {len(ratings)} ratings to database")
-
-    # All retrieved, now save to database
-    with Database.get_driver().atomic():
-        for rating in ratings:
-            rating.save()
-
-    getLogger().info("Results saved")
+    scraper = Scraper()
+    scraper.scrape(load_unscraped_hotels())
