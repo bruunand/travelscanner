@@ -32,7 +32,7 @@ class Scraper:
         return string.lower().replace("lejligheder", "apartments").replace("hotel", "").strip()
 
     def get_hotel_url(self, query):
-        payload = {'action': 'API', 'types': 'hotel', 'urlList': 'true', 'name_depth': '3', 'scoreThreshold': '0.3',
+        payload = {'action': 'API', 'types': 'hotel', 'urlList': 'true', 'name_depth': '3', 'scoreThreshold': '0.0',
                    'typeahead1_5': 'true', 'query': query}
 
         # Get from API
