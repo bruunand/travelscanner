@@ -76,15 +76,13 @@ class Scraper:
                                              review_count=int(review.group(2)), excellent=ratings[0], good=ratings[1],
                                              average=ratings[2], poor=ratings[3], terrible=ratings[4]).save()
 
-                    print(f"Could not get rating from URL {url}")
-
     def scrape(self, unscraped_hotels):
         self.cancel_tasks = False
 
         getLogger().info(f"Scraping {len(unscraped_hotels)} hotel reviews")
 
         # Distribute tasks to multiple workers
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=20) as executor:
             for name, area, country in unscraped_hotels:
                 executor.submit(self.add_rating, name, area, country)
 
