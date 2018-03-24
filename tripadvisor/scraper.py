@@ -5,6 +5,7 @@ from logging import getLogger
 
 from requests import get
 
+from travelscanner.crawlers.crawler import log_on_failure
 from travelscanner.data.datasets import load_unscraped_hotels
 from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 
@@ -12,7 +13,8 @@ from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 # Scraper for TripAdvisor hotel ratings
 class Scraper:
     BASE_URL = "https://www.tripadvisor.com"
-    COMPILED = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
+    REVIEW_REGEX = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
+    DISTRIBUTION_REGEX = re.compile(r'<span class="fill" style="width:(\d+)%;">')
 
     def __init__(self):
         self.cancel_tasks = False
@@ -50,33 +52,31 @@ class Scraper:
 
         return None
 
-    def get_rating(self, name, area):
+    @log_on_failure
+    def add_rating(self, hotel, area, country):
         if self.cancel_tasks:
-            return None, None
+            return
 
-        url = self.get_hotel_url(f"{Scraper.normalize(name)} {Scraper.normalize(area)}")
+        url = self.get_hotel_url(f"{Scraper.normalize(hotel)} {Scraper.normalize(area)}")
 
         if url is not None:
             get_result = get(f"{Scraper.BASE_URL}{url}")
 
             if get_result.status_code == 200:
-                match = Scraper.COMPILED.search(get_result.text)
+                review = Scraper.REVIEW_REGEX.search(get_result.text)
+                ratings = Scraper.DISTRIBUTION_REGEX.findall(get_result.text)
 
-                if match is not None:
-                    return float(match.group(1)), int(match.group(2))
-                else:
-                    return 3.0, 0
+                if review is None or ratings is None or not len(ratings) == 5:
+                    return
 
-            print(f"Could not get rating from URL {url}")
+                ratings = [float(rating) / 100 for rating in ratings]
 
-        return None, None
+                if review is not None and ratings is not None and len(ratings) == 5:
+                    TripAdvisorRating.create(country=country, hotel=hotel, area=area, rating=float(review.group(1)),
+                                             review_count=int(review.group(2)), excellent=ratings[0], good=ratings[1],
+                                             average=ratings[2], poor=ratings[3], terrible=ratings[4]).save()
 
-    def add_rating(self, name, area, country):
-        rating, review_count = self.get_rating(name, area)
-
-        if rating is not None and review_count is not None:
-            TripAdvisorRating.create(country=country, hotel=name, area=area,
-                                     rating=rating, review_count=review_count).save()
+                    print(f"Could not get rating from URL {url}")
 
     def scrape(self, unscraped_hotels):
         self.cancel_tasks = False
