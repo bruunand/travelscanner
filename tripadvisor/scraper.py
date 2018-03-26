@@ -15,6 +15,7 @@ class Scraper:
     BASE_URL = "https://www.tripadvisor.com"
     REVIEW_REGEX = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
     DISTRIBUTION_REGEX = re.compile(r'<span class="fill" style="width:(\d+)%;">')
+    BLACKLIST = ['vandreferie', 'rundrejse']
 
     def __init__(self):
         self.cancel_tasks = False
@@ -56,6 +57,12 @@ class Scraper:
     def add_rating(self, hotel, area, country):
         if self.cancel_tasks:
             return
+
+        # Check if hotel name is blacklisted
+        hotel = hotel.lower()
+        for blacklisted in Scraper.BLACKLIST:
+            if blacklisted in hotel:
+                return
 
         url = self.get_hotel_url(f"{Scraper.normalize(hotel)} {Scraper.normalize(area)}")
 

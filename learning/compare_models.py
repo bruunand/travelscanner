@@ -21,10 +21,10 @@ def get_dnn_regressor(num_features):
         dnn_model.add(Dense(1, kernel_initializer='normal', activation='linear'))
 
         # Compile model
-        dnn_model.compile(loss="mean_squared_error", optimizer="adam")
+        dnn_model.compile(loss="mean_absolute_error", optimizer="adam")
         return dnn_model
 
-    return KerasRegressor(build_fn=create_model, epochs=20, batch_size=250)
+    return KerasRegressor(build_fn=create_model, epochs=20, batch_size=150)
 
 
 def get_random_forest():
@@ -42,8 +42,8 @@ if __name__ == "__main__":
               'AdaBoost': AdaBoostRegressor(),
               'Bagging': BaggingRegressor(),
               'KNeighbors': KNeighborsRegressor(n_neighbors=5, weights='uniform'),
-              'BayesianRidge': BayesianRidge(),
-              'DNN': get_dnn_regressor(len(feature_list))}
+              'BayesianRidge': BayesianRidge()}
+              #'DNN': get_dnn_regressor(len(feature_list))}
 
     # Compare models using 5-fold CV
     results = {}

@@ -10,7 +10,7 @@ if __name__ == '__main__':
     agent = Agent()
     options = agent.get_travel_options()
     options.departure_airports = [Airports.AALBORG, Airports.BILLUND, Airports.COPENHAGEN]
-    options.set_earliest_departure_date('26/07/2018')
+    #options.set_earliest_departure_date('26/07/2018')
     options.number_of_guests = 2
     options.max_days_from_departure = 3
 

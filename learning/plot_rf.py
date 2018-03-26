@@ -1,8 +1,7 @@
-from sklearn import preprocessing
-
 from learning.compare_models import get_random_forest
 from learning.plot import plot_predicted_actual
 from travelscanner.data.datasets import split_set, load_prices
+from sklearn.metrics import r2_score, mean_absolute_error
 
 if __name__ == "__main__":
     # Load and split data
@@ -19,4 +18,6 @@ if __name__ == "__main__":
 
     # Predict and plot result
     y_predict = rf.predict(x_test)
+    print(f"Variance score: {r2_score(y_test, y_predict)}")
+    print(f"MAE: {mean_absolute_error(y_test, y_predict)}")
     plot_predicted_actual("RandomForest", y_test, y_predict)
