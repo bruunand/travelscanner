@@ -8,6 +8,7 @@ from travelscanner.models.travel import Travel
 class Price(MetaModel):
     id = PrimaryKeyField()
     price = FloatField()
+    predicted_price = FloatField(null=True)
     meal = IntegerField()
     all_inclusive = BooleanField(default=False)
     travel = ForeignKeyField(Travel)
