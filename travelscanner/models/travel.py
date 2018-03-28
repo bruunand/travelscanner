@@ -28,6 +28,7 @@ class Travel(MetaModel):
         return hash((self.hotel, self.area, self.country, self.departure_date, self.departure_airport,
                      self.crawler, self.guests, self.duration_days, self.hotel_stars, self.vendor))
 
+    '''Returns the amount of newly inserted travels.'''
     def upsert(self):
         # Skip entries which have no country specified
         if self.country == Countries.UNKNOWN:
@@ -41,17 +42,20 @@ class Travel(MetaModel):
                                          Travel.area == self.area).first()
 
         if existing is None:
-            self.save()
+            return self.save()
         else:
             existing.prices = self.prices
-            existing.save()
+            return existing.save()
 
     def save(self, force_insert=False, only=None):
         super().save(force_insert, only)
 
+        created_sum = 0
         for price in self.prices:
             price.travel = self
-            price.upsert()
+            created_sum = created_sum + price.upsert()
+
+        return created_sum
 
     class Meta:
         indexes = ((('hotel', 'area', 'country', 'departure_date', 'departure_airport', 'crawler', 'guests', 'vendor',

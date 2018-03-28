@@ -4,8 +4,6 @@ from travelscanner.data.database import Database
 from travelscanner.options.travel_options import Airports
 
 if __name__ == '__main__':
-    Database.initialize_cache()
-
     # Set options for our desired travel
     agent = Agent()
     options = agent.get_travel_options()

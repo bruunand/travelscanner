@@ -13,16 +13,17 @@ class Database(object):
 
     @staticmethod
     def save_travels(travels):
+        saved_sum = 0
         getLogger().info(f"Saving {len(travels)} travels")
 
         with Database.get_driver().atomic():
             for i, travel in enumerate(travels):
-                travel.upsert()
+                saved_sum = saved_sum + travel.upsert()
 
-                if i % 100 == 0 or i + 1 == len(travels):
+                if i % 500 == 0 or i + 1 == len(travels):
                     getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
 
-        getLogger().info(f"Saving complete")
+        getLogger().info(f"Saving complete, {saved_sum} new entities")
 
     @staticmethod
     def get_instance():

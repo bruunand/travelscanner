@@ -17,6 +17,7 @@ class Price(MetaModel):
     def __hash__(self):
         return hash((self.price, self.meal, self.all_inclusive, self.travel, self.room))
 
+    '''Returns the amount of newly inserted prices.'''
     def upsert(self):
         existing = Price.select().where(Price.price == self.price, Price.meal == self.meal,
                                         Price.all_inclusive == self.all_inclusive, Price.travel == self.travel,
@@ -24,8 +25,10 @@ class Price(MetaModel):
 
         if existing is None:
             self.save()
+            return 1
         else:
             existing.save()
+            return 0
 
     class Meta:
         indexes = ((('price', 'meal', 'room', 'travel', 'all_inclusive'), True),)

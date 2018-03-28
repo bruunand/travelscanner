@@ -101,8 +101,6 @@ class Travelmarket(Crawler):
 
     @log_on_failure
     def get_travels(self, page):
-        getLogger().info(f"Crawling page {page}")
-
         travels = set()
         try:
             result = self.post(page)
