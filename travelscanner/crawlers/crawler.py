@@ -46,7 +46,7 @@ class Crawlers(IntEnum):
 
 
 class Crawler(metaclass=ABCMeta):
-    BaseHeaders = {"User-Agent": None}
+    BaseHeaders = {"User-Agent": "coron <coronsteam@gmail.com>"}
 
     def __init__(self):
         self.agent = None

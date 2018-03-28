@@ -15,7 +15,7 @@ class Travel(MetaModel):
     hotel_stars = IntegerField()
     duration_days = IntegerField()
     departure_date = DateField()
-    departure_airport = IntegerField(null=True)
+    departure_airport = IntegerField()
     guests = IntegerField(default=2)
     has_pool = BooleanField()
     has_childpool = BooleanField()
@@ -33,7 +33,12 @@ class Travel(MetaModel):
         if self.country == Countries.UNKNOWN:
             return
 
-        existing = travelscanner.Database.retrieve_from_cache(self)
+        existing = Travel.select().where(Travel.departure_airport == self.departure_airport,
+                                         Travel.guests == self.guests, Travel.crawler == self.crawler,
+                                         Travel.departure_date == self.departure_date, Travel.country == self.country,
+                                         Travel.hotel_stars == self.hotel_stars, Travel.hotel == self.hotel,
+                                         Travel.vendor == self.vendor, Travel.duration_days == self.duration_days,
+                                         Travel.area == self.area).first()
 
         if existing is None:
             self.save()
@@ -47,3 +52,7 @@ class Travel(MetaModel):
         for price in self.prices:
             price.travel = self
             price.upsert()
+
+    class Meta:
+        indexes = ((('hotel', 'area', 'country', 'departure_date', 'departure_airport', 'crawler', 'guests', 'vendor',
+                     'duration_days', 'hotel_stars'), True),)

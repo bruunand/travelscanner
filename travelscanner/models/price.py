@@ -15,12 +15,17 @@ class Price(MetaModel):
     room = IntegerField()
 
     def __hash__(self):
-        return hash((self.price, self.meal, self.all_inclusive, self.travel, self.travel))
+        return hash((self.price, self.meal, self.all_inclusive, self.travel, self.room))
 
     def upsert(self):
-        existing = Database.retrieve_from_cache(self)
+        existing = Price.select().where(Price.price == self.price, Price.meal == self.meal,
+                                        Price.all_inclusive == self.all_inclusive, Price.travel == self.travel,
+                                        Price.room == self.room).first()
 
         if existing is None:
             self.save()
         else:
             existing.save()
+
+    class Meta:
+        indexes = ((('price', 'meal', 'room', 'travel', 'all_inclusive'), True),)

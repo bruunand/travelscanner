@@ -15,7 +15,7 @@ class Scraper:
     BASE_URL = "https://www.tripadvisor.com"
     REVIEW_REGEX = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
     DISTRIBUTION_REGEX = re.compile(r'<span class="fill" style="width:(\d+)%;">')
-    BLACKLIST = ['vandreferie', 'rundrejse']
+    BLACKLIST = ['vandreferie', 'rundrejse', 'krydstogt']
 
     def __init__(self):
         self.cancel_tasks = False

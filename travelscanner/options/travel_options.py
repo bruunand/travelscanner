@@ -73,6 +73,7 @@ class Countries(IntEnum):
     JAMAICA = 52
     NETHERLANDS_ANTILLES = 53
     KENYA = 54
+    SOUTH_AFRICA = 55
 
     @staticmethod
     def parse_da(name):
@@ -129,7 +130,8 @@ class Countries(IntEnum):
                             'Jordan': Countries.JORDAN,
                             'Jamaica': Countries.JAMAICA,
                             'Hollandske Antiller': Countries.NETHERLANDS_ANTILLES,
-                            'Kenya': Countries.KENYA
+                            'Kenya': Countries.KENYA,
+                            'Sydafrika': Countries.SOUTH_AFRICA
                             }, Countries.UNKNOWN)
 
 
