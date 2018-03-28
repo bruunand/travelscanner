@@ -18,13 +18,13 @@ def get_dnn_regressor(num_features):
         dnn_model.add(Dense(32, input_dim=num_features, kernel_initializer='normal', activation='relu'))
         dnn_model.add(Dense(200, kernel_initializer='normal', activation='relu'))
         dnn_model.add(Dense(256, kernel_initializer='normal', activation='relu'))
-        dnn_model.add(Dense(1, kernel_initializer='normal', activation='linear'))
+        dnn_model.add(Dense(1, kernel_initializer='normal', activation='relu'))
 
         # Compile model
         dnn_model.compile(loss="mean_absolute_error", optimizer="adam")
         return dnn_model
 
-    return KerasRegressor(build_fn=create_model, epochs=20, batch_size=150)
+    return KerasRegressor(build_fn=create_model, epochs=200, batch_size=2000)
 
 
 def get_random_forest():
