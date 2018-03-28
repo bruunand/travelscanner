@@ -5,10 +5,10 @@ Last minute travel scanner/crawler for Danish travel agencies and centralised sc
 - Crawl travels from Travelmarket
 - Save travels and associated prices to database, powered by peewee and whichever database driver peewee can support
 - Use a regressor to predict travel prices
+- Use a TripAdvisor scraper to gather additional ratings of hotels (including distribution of the five different ratings)
+- Local webserver showing overview of travels powered by Flask
 
 ## Planned features
-- Use TripAdvisor to gather additional ratings of hotels, as hotel stars can be misleading
 - Use the predicted prices to find actual good offers
-- Local webserver showing overview of travels powered by Flask
 - Notifications about travels powered by Pushbullet
 - Add more crawlers for other Danish websites
