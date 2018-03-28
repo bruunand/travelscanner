@@ -1,4 +1,4 @@
-from learning.plot import plot_predicted_actual
+from travelscanner.learning.plot import plot_predicted_actual
 from sklearn.metrics import r2_score, mean_absolute_error
 
 from travelscanner.data.database import Database
