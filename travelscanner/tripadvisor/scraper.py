@@ -6,7 +6,6 @@ from logging import getLogger
 from requests import get
 
 from travelscanner.crawlers.crawler import log_on_failure
-from travelscanner.data.datasets import load_unscraped_hotels
 from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 
 
@@ -94,8 +93,3 @@ class Scraper:
                 executor.submit(self.add_rating, name, area, country)
 
         getLogger().info(f"Scraping finished")
-
-
-if __name__ == "__main__":
-    scraper = Scraper()
-    scraper.scrape(load_unscraped_hotels())
