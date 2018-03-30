@@ -1,4 +1,4 @@
-from travelscanner.webserver import app
+import travelscanner.webserver
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    travelscanner.webserver.app.run(debug=True)

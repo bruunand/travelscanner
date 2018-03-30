@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.model_selection import train_test_split
+import sklearn.model_selection
 
 from travelscanner.models.price import Price, JOIN
 from travelscanner.models.travel import Travel
@@ -58,4 +58,4 @@ def load_prices(include_objects=False):
 
 
 def split_set(x, y, test_ratio=0.8):
-    return train_test_split(x, y, train_size=int(len(x) * test_ratio), random_state=4)
+    return sklearn.model_selection.train_test_split(x, y, train_size=int(len(x) * test_ratio), random_state=4)

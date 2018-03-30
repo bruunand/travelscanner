@@ -13,8 +13,7 @@ from travelscanner.models.price import Price
 
 
 class Travelmarket(Crawler):
-    BaseUrl = "https" \
-              "://www.travelmarket.dk/"
+    BaseUrl = "https://www.travelmarket.dk/"
     ScanUrl = BaseUrl + "tmcomponents/modules/tm_charter/public/ajax/charter_v7_requests.cfm"
     DateFormat = "%Y-%m-%d"
 

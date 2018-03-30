@@ -1,6 +1,5 @@
 from travelscanner.agent import Agent
 from travelscanner.crawlers.travelmarket import Travelmarket
-from travelscanner.data.database import Database
 from travelscanner.options.travel_options import Airports
 
 if __name__ == '__main__':

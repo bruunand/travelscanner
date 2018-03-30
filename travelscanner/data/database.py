@@ -1,6 +1,6 @@
-from logging import getLogger
+import logging
 
-from peewee import *
+import peewee
 
 
 class Database(object):
@@ -14,21 +14,21 @@ class Database(object):
     @staticmethod
     def save_travels(travels):
         saved_sum = 0
-        getLogger().info(f"Saving {len(travels)} travels")
+        logging.getLogger().info(f"Saving {len(travels)} travels")
 
         with Database.get_driver().atomic():
             for i, travel in enumerate(travels):
                 saved_sum = saved_sum + travel.upsert()
 
                 if i % 500 == 0 or i + 1 == len(travels):
-                    getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
+                    logging.getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
 
-        getLogger().info(f"Saving complete, {saved_sum} new entities")
+        logging.getLogger().info(f"Saving complete, {saved_sum} new entities")
 
     @staticmethod
     def get_instance():
         if Database.instance is None:
-            Database.instance = Database(MySQLDatabase('travelscanner', user='root', password=''))
+            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='root', password='planner'))
 
         return Database.instance
 
