@@ -32,7 +32,7 @@ class Travel(MetaModel):
     def upsert(self):
         # Skip entries which have no country specified
         if self.country == Countries.UNKNOWN:
-            return
+            return 0
 
         existing = Travel.select().where(Travel.departure_airport == self.departure_airport,
                                          Travel.guests == self.guests, Travel.crawler == self.crawler,

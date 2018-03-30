@@ -1,6 +1,7 @@
-from learning.compare_models import get_dnn_regressor
-from learning.plot import plot_predicted_actual
+from travelscanner.learning.plot import plot_predicted_actual
+
 from travelscanner.data.datasets import load_prices, split_set
+from travelscanner.learning.compare_models import get_dnn_regressor
 
 if __name__ == "__main__":
     # Load and split data

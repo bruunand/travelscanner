@@ -1,8 +1,9 @@
-from learning.compare_models import get_random_forest
-from learning.plot import plot_predicted_actual
+from travelscanner.learning.plot import plot_predicted_actual
+from sklearn.metrics import r2_score, mean_absolute_error
+
 from travelscanner.data.database import Database
 from travelscanner.data.datasets import split_set, load_prices
-from sklearn.metrics import r2_score, mean_absolute_error
+from travelscanner.learning.compare_models import get_random_forest
 
 if __name__ == "__main__":
     # Load and split data

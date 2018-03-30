@@ -24,14 +24,11 @@ def load_unscraped_hotels():
 
 def load_prices(include_objects=False):
     # Get data from database with join query
-    global price_objects
     joined_prices = Travel.select(Travel, Price, TripAdvisorRating).join(TripAdvisorRating, on=(
                 (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
                 (Travel.area == TripAdvisorRating.area))).switch(Travel).join(Price)
 
     # Initialize arrays
-    if include_objects:
-        price_objects = list()
     n_samples = joined_prices.count()
     features = ["All Inclusive", "Meal type", "Duration (days)", "Country", "Guests", "Hotel stars",
                 "Days until departure", "Month", "Week", "Departure airport", "Has pool", "Has childpool",
@@ -43,9 +40,6 @@ def load_prices(include_objects=False):
 
     # Fill arrays with data
     for i, d in enumerate(joined_prices):
-        if include_objects and price_objects is not None:
-            price_objects.append(d.price)
-
         # Set features
         data[i] = [d.price.all_inclusive, d.price.meal, d.duration_days, d.country, d.guests, d.hotel_stars,
                    (d.departure_date - d.price.created_at.date()).days, d.departure_date.month,
@@ -58,7 +52,7 @@ def load_prices(include_objects=False):
         target[i] = d.price.price
 
     if include_objects:
-        return data, target, features, price_objects
+        return data, target, features, []
     else:
         return data, target, features
 
