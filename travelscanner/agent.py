@@ -31,20 +31,13 @@ class Agent(object):
         while True:
             travels = set()
 
-            for crawler in self.crawlers:
-                travels.update(crawler.crawl())
+            for date in self.get_travel_options().get_daterange():
+                getLogger().info(f"Current date: {date}")
 
-            if self.crawl_interval is None:
-                break
-            else:
+                for crawler in self.crawlers:
+                    travels.update(crawler.crawl(date))
+
                 Database.save_travels(travels)
 
-                # Increase next crawl date
-                options = self.get_travel_options()
-                if options.max_days_from_departure is not None:
-                    options.increase_earliest_departure_date(timedelta(days=options.max_days_from_departure))
-
-                getLogger().info(f"Set new earliest departure date to {options.earliest_departure_date}")
-
-                # Wait before crawling again
-                sleep(self.crawl_interval.total_seconds())
+                if self.crawl_interval is not None:
+                    sleep(self.crawl_interval.total_seconds())

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import IntEnum
 
 from logging import getLogger
@@ -75,6 +75,8 @@ class Countries(IntEnum):
     KENYA = 54
     SOUTH_AFRICA = 55
     FAROE_ISLANDS = 56
+    ANTIGUA_AND_BARBUDA = 57
+    GAMBIA = 58
 
     @staticmethod
     def parse_da(name):
@@ -133,7 +135,9 @@ class Countries(IntEnum):
                             'Hollandske Antiller': Countries.NETHERLANDS_ANTILLES,
                             'Kenya': Countries.KENYA,
                             'Sydafrika': Countries.SOUTH_AFRICA,
-                            'Færøerne': Countries.FAROE_ISLANDS
+                            'Færøerne': Countries.FAROE_ISLANDS,
+                            'Antigua og Barbuda': Countries.ANTIGUA_AND_BARBUDA,
+                            'Gambia': Countries.GAMBIA
                             }, Countries.UNKNOWN)
 
 
@@ -263,9 +267,10 @@ class Vendors(IntEnum):
 
 
 class TravelOptions(object):
+    TIMEDELTA = timedelta(days=2)
+
     def __init__(self):
         # Price information
-        self.max_days_from_departure = None
         self.min_price = None
         self.max_price = None
 
@@ -275,7 +280,7 @@ class TravelOptions(object):
 
         # Date and duration information
         self.earliest_departure_date = datetime.today()
-        self.maximum_days_from_departure = None
+        self.latest_departure_date = datetime.today() + TravelOptions.TIMEDELTA
         self.duration_days = None
 
         # Hotel information
@@ -286,12 +291,22 @@ class TravelOptions(object):
         # Guest information
         self.number_of_guests = None
 
-    def increase_earliest_departure_date(self, timedelta):
-        self.earliest_departure_date = self.earliest_departure_date + timedelta
+    def get_daterange(self):
+        day_difference = (self.latest_departure_date - self.earliest_departure_date).days
+
+        for n in range(int(day_difference / TravelOptions.TIMEDELTA.days) + 1):
+            yield self.earliest_departure_date + timedelta(days=TravelOptions.TIMEDELTA.days * n)
+
+    @staticmethod
+    def parse_date(date_string):
+        return datetime.strptime(date_string, '%d/%m/%Y')
+
+    def set_latest_departure_date(self, date_string):
+        self.latest_departure_date = TravelOptions.parse_date(date_string)
 
     def set_earliest_departure_date(self, date_string):
-        self.earliest_departure_date = datetime.strptime(date_string, '%d/%m/%Y')
-        delta_time = datetime.today() - self.earliest_departure_date
+        self.earliest_departure_date = TravelOptions.parse_date(date_string)
+        delta_time = datetime.today() - self.latest_departure_date
 
         if delta_time.days > 0:
             raise DateExceededException(delta_time)

@@ -13,11 +13,13 @@ class Price(MetaModel):
     all_inclusive = BooleanField(default=False)
     travel = ForeignKeyField(Travel)
     room = IntegerField()
+    link = TextField()
 
     def __hash__(self):
         return hash((self.price, self.meal, self.all_inclusive, self.travel, self.room))
 
     '''Returns the amount of newly inserted prices.'''
+
     def upsert(self):
         existing = Price.select().where(Price.price == self.price, Price.meal == self.meal,
                                         Price.all_inclusive == self.all_inclusive, Price.travel == self.travel,

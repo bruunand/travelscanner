@@ -11,17 +11,17 @@ from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 
 # Scraper for TripAdvisor hotel ratings
 class Scraper:
-    BASE_URL = "https://www.tripadvisor.com"
-    REVIEW_REGEX = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
-    DISTRIBUTION_REGEX = re.compile(r'<span class="fill" style="width:(\d+)%;">')
-    BLACKLIST = ['vandreferie', 'rundrejse', 'krydstogt']
+    BaseUrl = "https://www.tripadvisor.com"
+    ReviewRegex = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
+    DistributionRegex = re.compile(r'<span class="fill" style="width:(\d+)%;">')
+    Blacklist = ['vandreferie', 'rundrejse', 'krydstogt']
 
     def __init__(self):
         self.cancel_tasks = False
 
     @staticmethod
     def normalize(string):
-        special_characters = [',', '-', '/']
+        special_characters = [',', '-', '/', '(', ')']
 
         for character in special_characters:
             if character in string:
@@ -34,7 +34,7 @@ class Scraper:
                    'typeahead1_5': 'true', 'query': query}
 
         # Get from API
-        get_result = get(f"{Scraper.BASE_URL}/TypeAheadJson", params=payload,
+        get_result = get(f"{Scraper.BaseUrl}/TypeAheadJson", params=payload,
                          headers={'X-Requested-With': 'XMLHttpRequest'})
         if not get_result.status_code == 200:
             return None
@@ -59,18 +59,18 @@ class Scraper:
 
         # Check if hotel name is blacklisted
         hotel = hotel.lower()
-        for blacklisted in Scraper.BLACKLIST:
+        for blacklisted in Scraper.Blacklist:
             if blacklisted in hotel:
                 return
 
         url = self.get_hotel_url(f"{Scraper.normalize(hotel)} {Scraper.normalize(area)}")
 
         if url is not None:
-            get_result = get(f"{Scraper.BASE_URL}{url}")
+            get_result = get(f"{Scraper.BaseUrl}{url}")
 
             if get_result.status_code == 200:
-                review = Scraper.REVIEW_REGEX.search(get_result.text)
-                ratings = Scraper.DISTRIBUTION_REGEX.findall(get_result.text)
+                review = Scraper.ReviewRegex.search(get_result.text)
+                ratings = Scraper.DistributionRegex.findall(get_result.text)
 
                 if review is None or ratings is None or not len(ratings) == 5:
                     return

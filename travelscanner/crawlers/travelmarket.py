@@ -2,12 +2,14 @@ import json
 from datetime import datetime
 from json import JSONDecodeError
 
+import re
+from urllib.parse import unquote, parse_qs, urlparse
 import requests
 from logging import getLogger
 
 from travelscanner.crawlers.threaded_crawler import crawl_multi_threaded
 from travelscanner.models.travel import Travel
-from travelscanner.options.travel_options import Airports, Countries, MealTypes, RoomTypes, Vendors
+from travelscanner.options.travel_options import Airports, Countries, MealTypes, RoomTypes, Vendors, TravelOptions
 from travelscanner.crawlers.crawler import Crawler, join_values, log_on_failure, get_default_if_none, Crawlers
 from travelscanner.models.price import Price
 
@@ -16,6 +18,7 @@ class Travelmarket(Crawler):
     BaseUrl = "https://www.travelmarket.dk/"
     ScanUrl = BaseUrl + "tmcomponents/modules/tm_charter/public/ajax/charter_v7_requests.cfm"
     DateFormat = "%Y-%m-%d"
+    UrlRegex = re.compile(r'&url=(.*?)')
 
     def __init__(self):
         super().__init__()
@@ -26,6 +29,7 @@ class Travelmarket(Crawler):
                                    Countries.EGYPT: "500297", Countries.FRANCE: "500439", Countries.GREECE: "500575",
                                    Countries.MALTA: "501574", Countries.PORTUGAL: "502079", Countries.SPAIN: "500347",
                                    Countries.THAILAND: "502685", Countries.UK: "500481"}
+        self.current_departure_date = datetime.today()
 
     def set_agent(self, agent):
         super().set_agent(agent)
@@ -54,10 +58,10 @@ class Travelmarket(Crawler):
         return get_default_if_none(self.get_options().minimum_hotel_stars, 0)
 
     def get_departure_date(self):
-        return self.get_options().earliest_departure_date.strftime(Travelmarket.DateFormat)
+        return self.current_departure_date.strftime(Travelmarket.DateFormat)
 
     def get_flex_days(self):
-        return get_default_if_none(self.get_options().maximum_days_from_departure, 0)
+        return TravelOptions.TIMEDELTA.days
 
     def get_min_price(self):
         return get_default_if_none(self.get_options().min_price, 0)
@@ -122,9 +126,16 @@ class Travelmarket(Crawler):
 
             # Add prices
             for price in item['PRICES']:
-                travel.prices.add(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
-                                        room=RoomTypes.parse_da(price['ROOMTYPE']), travel=travel,
-                                        meal=MealTypes.parse_da(price['MEALTYPE'])))
+                link = price['BOOKINGSTATLINK']
+                if "&url=" in link:
+                    queries = parse_qs(urlparse(link).query)
+
+                    if 'url' in queries:
+                        link = queries['url'][0]
+
+                travel.add_price(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
+                                       room=RoomTypes.parse_da(price['ROOMTYPE']), travel=travel,
+                                       meal=MealTypes.parse_da(price['MEALTYPE']), link=link))
             # Add travel
             travels.add(travel)
 
@@ -133,6 +144,7 @@ class Travelmarket(Crawler):
     def get_id(self):
         return Crawlers.TRAVELMARKET
 
-    def crawl(self):
-        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=20)
+    def crawl(self, current_departure_date):
+        self.current_departure_date = current_departure_date
 
+        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=20)

@@ -3,6 +3,7 @@ from enum import IntEnum
 from logging import getLogger
 from traceback import print_exc
 
+
 def get_default_if_none(value, default):
     """Returns the specified value unless it is none, in which case the specified default will be returned."""
     return default if value is None else value
@@ -60,7 +61,7 @@ class Crawler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def crawl(self):
+    def crawl(self, from_date):
         pass
 
     def set_agent(self, agent):

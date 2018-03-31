@@ -1,3 +1,4 @@
+from logging import getLogger
 from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField, DateField
 
 import travelscanner.data
@@ -29,6 +30,7 @@ class Travel(MetaModel):
                      self.crawler, self.guests, self.duration_days, self.hotel_stars, self.vendor))
 
     '''Returns the amount of newly inserted travels.'''
+
     def upsert(self):
         # Skip entries which have no country specified
         if self.country == Countries.UNKNOWN:
@@ -56,6 +58,21 @@ class Travel(MetaModel):
             created_sum = created_sum + price.upsert()
 
         return created_sum
+
+    '''Ensure that duplicate prices are not added and always add the lowest price'''
+
+    def add_price(self, new):
+        for existing in self.prices:
+            if existing.meal == new.meal and existing.all_inclusive == new.all_inclusive and existing.room == new.room:
+                if new.price < existing.price:
+                    self.prices.remove(existing)
+                else:
+                    return
+
+                break
+
+        # If no duplicates are found, we can safely add the price
+        self.prices.add(new)
 
     class Meta:
         indexes = ((('hotel', 'area', 'country', 'departure_date', 'departure_airport', 'crawler', 'guests', 'vendor',
