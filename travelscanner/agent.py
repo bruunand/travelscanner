@@ -29,9 +29,9 @@ class Agent(object):
             raise NoCrawlersException()
 
         while True:
-            travels = set()
-
             for date in self.get_travel_options().get_daterange():
+                travels = set()
+
                 getLogger().info(f"Current date: {date}")
 
                 for crawler in self.crawlers:
