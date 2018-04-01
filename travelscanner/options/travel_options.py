@@ -295,8 +295,8 @@ class TravelOptions(object):
         day_difference = (self.latest_departure_date - self.earliest_departure_date).days
 
         for n in range(int(day_difference / TravelOptions.TIMEDELTA.days) + 1):
-            multiplier = 1 if n > 0 else 0
-            yield self.earliest_departure_date + timedelta(days=TravelOptions.TIMEDELTA.days * multiplier)
+            additional_days = 1 if n > 0 else 0
+            yield self.earliest_departure_date + timedelta(days=TravelOptions.TIMEDELTA.days * n + additional_days)
 
     @staticmethod
     def parse_date(date_string):
