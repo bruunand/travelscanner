@@ -3,7 +3,7 @@ from io import BytesIO
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 
-def get_response_from_figure(fig):
+def make_response_from_figure(fig):
     # Get figure canvas and then write to a byte array in PNG format
     canvas = FigureCanvas(fig)
     png_output = BytesIO()
