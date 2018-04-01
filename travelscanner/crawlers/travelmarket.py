@@ -147,4 +147,4 @@ class Travelmarket(Crawler):
     def crawl(self, current_departure_date):
         self.current_departure_date = current_departure_date
 
-        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=20)
+        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=30)

@@ -267,7 +267,7 @@ class Vendors(IntEnum):
 
 
 class TravelOptions(object):
-    TIMEDELTA = timedelta(days=2)
+    TIMEDELTA = timedelta(days=4)
 
     def __init__(self):
         # Price information
@@ -291,11 +291,12 @@ class TravelOptions(object):
         # Guest information
         self.number_of_guests = None
 
-    def get_daterange(self):
+    def get_dates_in_range(self):
         day_difference = (self.latest_departure_date - self.earliest_departure_date).days
 
         for n in range(int(day_difference / TravelOptions.TIMEDELTA.days) + 1):
-            yield self.earliest_departure_date + timedelta(days=TravelOptions.TIMEDELTA.days * n)
+            multiplier = 1 if n > 0 else 0
+            yield self.earliest_departure_date + timedelta(days=TravelOptions.TIMEDELTA.days * multiplier)
 
     @staticmethod
     def parse_date(date_string):

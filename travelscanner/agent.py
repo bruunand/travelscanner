@@ -29,7 +29,7 @@ class Agent(object):
             raise NoCrawlersException()
 
         while True:
-            for date in self.get_travel_options().get_daterange():
+            for date in self.get_travel_options().get_dates_in_range():
                 travels = set()
 
                 getLogger().info(f"Current date: {date}")
