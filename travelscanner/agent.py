@@ -37,7 +37,7 @@ class Agent(object):
                 for crawler in self.crawlers:
                     travels.update(crawler.crawl(date))
 
-                Database.save_travels(travels)
+                Database.save_travels(travels, make_new_thread=True)
 
                 if self.crawl_interval is not None:
                     sleep(self.crawl_interval.total_seconds())
