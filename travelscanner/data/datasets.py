@@ -23,6 +23,8 @@ def load_unscraped_hotels():
 
 
 def load_prices(include_objects=False):
+    price_objects = []
+
     # Get data from database with join query
     joined_prices = Travel.select(Travel, Price, TripAdvisorRating).join(TripAdvisorRating, on=(
                 (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
@@ -40,6 +42,8 @@ def load_prices(include_objects=False):
 
     # Fill arrays with data
     for i, d in enumerate(joined_prices):
+        price_objects.append(d.price)
+
         # Set features
         data[i] = [d.price.all_inclusive, d.price.meal, d.duration_days, d.country, d.guests, d.hotel_stars,
                    (d.departure_date - d.price.created_at.date()).days, d.departure_date.month,
@@ -52,10 +56,10 @@ def load_prices(include_objects=False):
         target[i] = d.price.price
 
     if include_objects:
-        return data, target, features, []
+        return data, target, features, price_objects
     else:
         return data, target, features
 
 
 def split_set(x, y, test_ratio=0.8):
-    return sklearn.model_selection.train_test_split(x, y, train_size=int(len(x) * test_ratio), random_state=4)
+    return sklearn.model_selection.train_test_split(x, y, train_size=int(len(x) * test_ratio), random_state=42)

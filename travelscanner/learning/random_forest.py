@@ -21,6 +21,8 @@ if __name__ == "__main__":
     # Predict prices
     all_predict = rf.predict(x)
     with Database.get_driver().atomic():
+        print("Saving prices")
+
         for i in range(len(price_objects)):
             price_objects[i].predicted_price = all_predict[i]
             price_objects[i].save()
@@ -30,3 +32,5 @@ if __name__ == "__main__":
     print(f"Variance score: {r2_score(y_test, y_predict)}")
     print(f"MAE: {mean_absolute_error(y_test, y_predict)}")
     plot_predicted_actual("RandomForest", y_test, y_predict)
+
+

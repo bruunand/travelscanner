@@ -24,7 +24,6 @@ def get_price_history(id):
     figure = Figure()
     legends = []
     for group in groups:
-        print("ree")
         # Add a subplot for each distinct group
         axes = figure.add_subplot(111)
 

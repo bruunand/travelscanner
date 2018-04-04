@@ -267,7 +267,7 @@ class Vendors(IntEnum):
 
 
 class TravelOptions(object):
-    TIMEDELTA = timedelta(days=4)
+    TIMEDELTA = timedelta(days=1)
 
     def __init__(self):
         # Price information
