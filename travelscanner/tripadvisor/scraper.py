@@ -14,7 +14,7 @@ class Scraper:
     BaseUrl = "https://www.tripadvisor.com"
     ReviewRegex = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
     DistributionRegex = re.compile(r'<span class="fill" style="width:(\d+)%;">')
-    Blacklist = ['vandreferie', 'rundrejse', 'krydstogt']
+    Blacklist = ['krydstogt', 'rejse']
 
     def __init__(self):
         self.cancel_tasks = False
@@ -27,7 +27,7 @@ class Scraper:
             if character in string:
                 string = string.split(character)[0]
 
-        return string.lower().replace("lejligheder", "apartments").replace("hotel", "").strip()
+        return string.lower().replace("lejligheder", "").replace("lejl.", "").replace("hotel", "").strip()
 
     def get_hotel_url(self, query):
         payload = {'action': 'API', 'types': 'hotel', 'urlList': 'true', 'name_depth': '3', 'scoreThreshold': '0.0',
