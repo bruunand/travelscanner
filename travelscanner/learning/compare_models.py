@@ -27,14 +27,14 @@ def get_dnn_regressor(num_features):
 
 
 def get_random_forest():
-    return RandomForestRegressor(max_depth=64)
+    return RandomForestRegressor(n_estimators=400)
 
 
 if __name__ == "__main__":
     x, y, feature_list = load_prices()
 
     # Add models to dictionary
-    models = {'GradientBoosting': GradientBoostingRegressor(),
+    models = {'GradientBoosting': GradientBoostingRegressor(n_estimators=400),
               'Linear': LinearRegression(),
               'RandomForest': get_random_forest(),
               'Lasso': Lasso(alpha=0.1),
