@@ -36,7 +36,7 @@ class Database(object):
     @staticmethod
     def get_instance():
         if Database.instance is None:
-            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='root', password=''))
+            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='root', password='secrets'))
 
         return Database.instance
 
