@@ -88,7 +88,7 @@ class Scraper:
         getLogger().info(f"Scraping {len(unscraped_hotels)} hotel reviews")
 
         # Distribute tasks to multiple workers
-        with ThreadPoolExecutor(max_workers=20) as executor:
+        with ThreadPoolExecutor(max_workers=25) as executor:
             for name, area, country in unscraped_hotels:
                 executor.submit(self.add_rating, name, area, country)
 

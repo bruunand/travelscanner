@@ -12,7 +12,7 @@ class Agent(object):
     def __init__(self):
         self.crawlers = []
         self.travel_options = TravelOptions()
-        self.crawl_interval = timedelta(seconds=10)
+        self.crawl_interval = timedelta(seconds=0)
 
     def get_travel_options(self):
         return self.travel_options

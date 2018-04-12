@@ -1,3 +1,5 @@
+from keras.callbacks import EarlyStopping
+
 from travelscanner.learning.plot import plot_predicted_actual
 
 from travelscanner.data.datasets import load_prices, split_set
@@ -10,7 +12,8 @@ if __name__ == "__main__":
 
     # Fit DNN model to data
     dnn = get_dnn_regressor(len(features))
-    dnn.fit(x_train, y_train)
+    callbacks = [EarlyStopping(monitor='val_mean_absolute_error', patience=20, verbose=0)]
+    dnn.fit(x_train, y_train, validation_data=(x_test, y_test), callbacks=callbacks, verbose=2)
 
     # Predict and plot result
     y_predict = dnn.predict(x_test)

@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from keras import Sequential
+from keras import Sequential, metrics
 from keras.layers import Dense, Dropout
 from keras.wrappers.scikit_learn import KerasRegressor
 from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, BaggingRegressor, GradientBoostingRegressor
@@ -14,16 +14,18 @@ def get_dnn_regressor(num_features):
     def create_model():
         # Create a sequential model
         dnn_model = Sequential()
-        dnn_model.add(Dense(20, input_dim=num_features, activation='relu'))
-        dnn_model.add(Dense(10, activation='relu'))
-        dnn_model.add(Dropout(0.4))
-        dnn_model.add(Dense(1, activation='relu'))
+        dnn_model.add(Dense(100, activation="tanh", input_shape=(num_features,)))
+        dnn_model.add(Dense(50, activation="relu"))
+        dnn_model.add(Dropout(0.5))
+        dnn_model.add(Dense(20, activation="relu"))
+        dnn_model.add(Dense(1))
 
         # Compile model
-        dnn_model.compile(loss="mean_absolute_error", optimizer="adam")
+        dnn_model.compile(loss="mean_absolute_error", optimizer="adam", metrics=[metrics.mae])
+
         return dnn_model
 
-    return KerasRegressor(build_fn=create_model, epochs=200, batch_size=500)
+    return KerasRegressor(build_fn=create_model, epochs=200, batch_size=2000)
 
 
 def get_random_forest():
