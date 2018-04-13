@@ -97,7 +97,7 @@ class Travelmarket(Crawler):
 
         return json.dumps(filters)
 
-    def post(self, page):
+    def post_page(self, page):
         data = dict(action="getListJSON", filters=self.synthesize_filters(page), dDeparture=self.get_departure_date(),
                     sLanguage="DK", nLanguageID=2, nSupplierId=21)
 
@@ -107,7 +107,7 @@ class Travelmarket(Crawler):
     def get_travels(self, page):
         travels = set()
         try:
-            result = self.post(page)
+            result = self.post_page(page)
             data = json.loads(result.text)
         except JSONDecodeError as error:
             getLogger().error(f"Unable to parse JSON ({result.status_code}): {result.text}, {error}")

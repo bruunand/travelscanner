@@ -77,6 +77,13 @@ class Countries(IntEnum):
     FAROE_ISLANDS = 56
     ANTIGUA_AND_BARBUDA = 57
     GAMBIA = 58
+    FINLAND = 59
+    ALBANIA = 60
+    CHINA = 61
+    ESTONIA = 62
+    US_VIRGIN_ISLANDS = 63
+    OMAN = 64
+    CURACAO = 65
 
     @staticmethod
     def parse_da(name):
@@ -112,6 +119,7 @@ class Countries(IntEnum):
                             'Japan': Countries.JAPAN,
                             'Malaysia': Countries.MALAYSIA,
                             'Den dominikanske republik': Countries.DOMINICAN_REPUBLIC,
+                            'Den Dominikanske Republik': Countries.DOMINICAN_REPUBLIC,
                             'Tanzania': Countries.TANZANIA,
                             'Mauritius': Countries.MAURITIUS,
                             'Maldiverne': Countries.MALDIVES,
@@ -130,6 +138,7 @@ class Countries(IntEnum):
                             'Aruba': Countries.ARUBA,
                             'Tunesien': Countries.TUNISIA,
                             'Kap Verde Øerne': Countries.CAPE_VERDE,
+                            'Kap Verde': Countries.CAPE_VERDE,
                             'Jordan': Countries.JORDAN,
                             'Jamaica': Countries.JAMAICA,
                             'Hollandske Antiller': Countries.NETHERLANDS_ANTILLES,
@@ -137,7 +146,15 @@ class Countries(IntEnum):
                             'Sydafrika': Countries.SOUTH_AFRICA,
                             'Færøerne': Countries.FAROE_ISLANDS,
                             'Antigua og Barbuda': Countries.ANTIGUA_AND_BARBUDA,
-                            'Gambia': Countries.GAMBIA
+                            'Gambia': Countries.GAMBIA,
+                            'Finland': Countries.FINLAND,
+                            'Tunis': Countries.TUNISIA,
+                            'Folkerepublikken Kina': Countries.CHINA,
+                            'Estland': Countries.ESTONIA,
+                            'De Amerikanske Jomfruøer': Countries.US_VIRGIN_ISLANDS,
+                            'Oman': Countries.OMAN,
+                            'Albanien': Countries.ALBANIA,
+                            'Curacao': Countries.CURACAO
                             }, Countries.UNKNOWN)
 
 
@@ -189,6 +206,7 @@ class RoomTypes(IntEnum):
     BUNGALOW = 9
 
     '''Not the prettiest approach to take here, but the names are not consistent in any way.'''
+
     @staticmethod
     def parse_da(name):
         name = name.lower()
@@ -239,9 +257,16 @@ class Vendors(IntEnum):
     TURISTREJSER = 20
     APOLLO = 21
     ALMENA_TRAVEL = 22
+    SOLFAKTOR = 23
+    AMISOL = 24
 
     @staticmethod
     def parse_da(name):
+        shorthands = ['Spies', 'FolkeFerie', 'Amisol']
+        for shorthand in shorthands:
+            if name.startswith(shorthand):
+                name = shorthand
+
         return parse(name, {'Spies': Vendors.SPIES,
                             'Bravo Tours': Vendors.BRAVO_TOURS,
                             'TripSave': Vendors.TRIPSAVE,
@@ -254,16 +279,17 @@ class Vendors(IntEnum):
                             'Nazar': Vendors.NAZAR,
                             'Eliza was here': Vendors.ELIZA_WAS_HERE,
                             'Atlantis Rejser': Vendors.ATLANTIS_REJSER,
-                            'Amisol Travel': Vendors.AMISOL_TRAVEL,
+                            'Amisol': Vendors.AMISOL_TRAVEL,
                             'SunCharter': Vendors.SUNCHARTER,
                             'Aarhus Charter': Vendors.AARHUS_CHARTER,
                             'Balkan Holidays': Vendors.BALKAN_HOLIDAYS,
                             'Primo Tours': Vendors.PRIMO_TOURS,
-                            'FolkeFerie.dk': Vendors.FOLKEFERIE,
+                            'FolkeFerie': Vendors.FOLKEFERIE,
                             'TripX': Vendors.TRIPX,
                             'Turistrejser': Vendors.TURISTREJSER,
                             'Apollo': Vendors.APOLLO,
-                            'Almena Travel': Vendors.ALMENA_TRAVEL}, Vendors.UNKNOWN)
+                            'Almena Travel': Vendors.ALMENA_TRAVEL,
+                            'Solfaktor': Vendors.SOLFAKTOR}, Vendors.UNKNOWN)
 
 
 class TravelOptions(object):

@@ -44,6 +44,7 @@ def log_on_failure(func):
 
 class Crawlers(IntEnum):
     TRAVELMARKET = 0
+    AFBUDSREJSER = 1
 
 
 class Crawler(metaclass=ABCMeta):
