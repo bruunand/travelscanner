@@ -12,15 +12,10 @@ class Database(object):
         self.driver = driver
         self.cache = dict()
         self.has_initialized_cache = False
-        self.save_pool = ThreadPoolExecutor(1)
+        self.save_pool = ThreadPoolExecutor(2)
 
     @staticmethod
-    def save_travels(travels, make_new_thread=False):
-        if make_new_thread:
-            Database.get_instance().save_pool.submit(Database.save_travels, travels)
-
-            return
-
+    def save_travels(travels):
         saved_sum = 0
         logging.getLogger().info(f"Saving {len(travels)} travels")
 
@@ -28,7 +23,7 @@ class Database(object):
             for i, travel in enumerate(travels):
                 saved_sum = saved_sum + travel.upsert()
 
-                if i % 500 == 0 or i + 1 == len(travels):
+                if i % 100 == 0 or i + 1 == len(travels):
                     logging.getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
 
         logging.getLogger().info(f"Saving complete, {saved_sum} new entities")
@@ -36,7 +31,7 @@ class Database(object):
     @staticmethod
     def get_instance():
         if Database.instance is None:
-            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='root', password='planner'))
+            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='root', password=''))
 
         return Database.instance
 

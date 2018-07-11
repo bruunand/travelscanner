@@ -28,7 +28,7 @@ def get_dnn_regressor(num_features):
     return KerasRegressor(build_fn=create_model, epochs=200, batch_size=2000)
 
 
-def get_random_forest():
+def get_xgboost():
     return RandomForestRegressor(n_estimators=400)
 
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # Add models to dictionary
     models = {'GradientBoosting': GradientBoostingRegressor(n_estimators=400),
               'Linear': LinearRegression(),
-              'RandomForest': get_random_forest(),
+              'RandomForest': get_xgboost(),
               'Lasso': Lasso(alpha=0.1),
               'AdaBoost': AdaBoostRegressor(),
               'Bagging': BaggingRegressor(),

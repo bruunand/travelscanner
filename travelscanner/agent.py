@@ -12,7 +12,7 @@ class Agent(object):
     def __init__(self):
         self.crawlers = []
         self.travel_options = TravelOptions()
-        self.crawl_interval = timedelta(seconds=0)
+        self.crawl_interval = timedelta(seconds=5)
 
     def get_travel_options(self):
         return self.travel_options
@@ -37,7 +37,7 @@ class Agent(object):
                 for crawler in self.crawlers:
                     travels.update(crawler.crawl(date))
 
-                Database.save_travels(travels, make_new_thread=True)
+                Database.save_travels(travels)
 
                 if self.crawl_interval is not None:
                     sleep(self.crawl_interval.total_seconds())
