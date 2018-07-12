@@ -1,23 +1,19 @@
 import json
 
-from flask import render_template
+from flask import Blueprint
 from matplotlib.dates import DateFormatter
+from matplotlib.figure import Figure
 from peewee import fn
 
 from travelscanner.models.price import Price
 from travelscanner.models.travel import Travel
 from travelscanner.options.travel_options import Countries, MealTypes, RoomTypes
-from travelscanner.webserver import app, utils
+from travelscanner.webserver import utils
 
-from matplotlib.figure import Figure
-
-@app.route('/')
-@app.route('/index')
-def frontpage():
-    return render_template('index.html')
+api_blueprint = Blueprint('simple_page', __name__)
 
 
-@app.route("/price_history/<id>")
+@api_blueprint.route("/price_history/<id>")
 def get_price_history(id):
     groups = Price.select(Price.meal, Price.room, Price.all_inclusive).distinct().where(Price.travel == id)
 
@@ -44,7 +40,7 @@ def get_price_history(id):
     return utils.make_response_from_figure(figure)
 
 
-@app.route('/api/get_travels')
+@api_blueprint.route('/api/get_travels')
 def get_travels():
     data = list()
 

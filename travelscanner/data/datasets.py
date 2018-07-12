@@ -1,3 +1,5 @@
+from random import shuffle
+
 import numpy as np
 import sklearn.model_selection
 
@@ -19,16 +21,21 @@ def load_unscraped_hotels():
     for travel in travels:
         ret_hotels.append((travel.hotel, travel.area, travel.country))
 
+    shuffle(ret_hotels)
+
     return ret_hotels
 
 
-def load_prices(include_objects=False):
+def load_prices(include_objects=False, unpredicted_only=False):
     price_objects = []
 
     # Get data from database with join query
     joined_prices = Travel.select(Travel, Price, TripAdvisorRating).join(TripAdvisorRating, on=(
                 (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
                 (Travel.area == TripAdvisorRating.area))).switch(Travel).join(Price)
+
+    if unpredicted_only:
+        joined_prices = joined_prices.where(Price.predicted_price.is_null())
 
     # Initialize arrays
     n_samples = joined_prices.count()
@@ -61,5 +68,5 @@ def load_prices(include_objects=False):
         return data, target, features
 
 
-def split_set(x, y, test_ratio=0.8):
-    return sklearn.model_selection.train_test_split(x, y, train_size=int(len(x) * test_ratio), random_state=42)
+def split_set(x, y, train_ratio=0.8):
+    return sklearn.model_selection.train_test_split(x, y, train_size=int(len(x) * train_ratio), random_state=42)

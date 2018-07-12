@@ -1,10 +1,15 @@
 from flask import Flask
-from flask_bootstrap import Bootstrap
+from flask_cors import CORS
 
-app = Flask(__name__)
+from travelscanner.webserver.blueprints import api_blueprint
 
-# Setup bootstrap
-Bootstrap(app)
+if __name__ == "__main__":
+    app = Flask(__name__)
 
-# Setup routing
-from travelscanner.webserver import routing
+    # Setup bootstrap
+    CORS(app)
+
+    # Setup routing
+    app.register_blueprint(api_blueprint)
+
+    app.run(debug=True)

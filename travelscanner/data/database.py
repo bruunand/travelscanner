@@ -23,9 +23,6 @@ class Database(object):
             for i, travel in enumerate(travels):
                 saved_sum = saved_sum + travel.upsert()
 
-                if i % 100 == 0 or i + 1 == len(travels):
-                    logging.getLogger().info(f"{(i+1) / len(travels) * 100}% saved")
-
         logging.getLogger().info(f"Saving complete, {saved_sum} new entities")
 
     @staticmethod
