@@ -24,20 +24,19 @@ class Agent(object):
     def set_scanning_interval(self, scan_interval):
         self.crawl_interval = scan_interval
 
-    def crawl_loop(self):
+    def crawl(self):
         if len(self.crawlers) == 0:
             raise NoCrawlersException()
 
-        while True:
-            for date in self.get_travel_options().get_dates_in_range():
-                travels = set()
+        for date in self.get_travel_options().get_dates_in_range():
+            travels = set()
 
-                getLogger().info(f"Current date: {date}")
+            getLogger().info(f"Current date: {date}")
 
-                for crawler in self.crawlers:
-                    travels.update(crawler.crawl(date))
+            for crawler in self.crawlers:
+                travels.update(crawler.crawl(date))
 
-                Database.save_travels(travels)
+            Database.save_travels(travels)
 
-                if self.crawl_interval is not None:
-                    sleep(self.crawl_interval.total_seconds())
+            if self.crawl_interval is not None:
+                sleep(self.crawl_interval.total_seconds())

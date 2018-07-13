@@ -5,11 +5,11 @@ from travelscanner.data.datasets import load_prices
 from travelscanner.models.price import Price, Database
 
 
-def predict():
+def predict_prices():
     x, _, _, price_objects = load_prices(include_objects=True, unpredicted_only=True)
 
     # Load saved model
-    regressor = pickle.load(open("xgboost.pickle.dat", "rb"))
+    regressor = pickle.load(open("travelscanner/learning/xgboost.pickle.dat", "rb"))
 
     # Predict prices
     all_predict = regressor.predict(x)
@@ -27,7 +27,3 @@ def predict():
                 getLogger().info(f"Progress: {i}/{len(price_objects)}")
 
     getLogger().info("Prediction finished")
-
-
-if __name__ == "__main__":
-    predict()

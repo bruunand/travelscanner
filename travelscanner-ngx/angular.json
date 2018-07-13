@@ -3,21 +3,17 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "travelscanner-ng": {
+    "travelscanner-ngx": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
       "prefix": "app",
-      "schematics": {
-        "@schematics/angular:component": {
-          "styleext": "scss"
-        }
-      },
+      "schematics": {},
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/travelscanner-ng",
+            "outputPath": "dist/travelscanner-ngx",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -27,7 +23,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.css"
             ],
             "scripts": []
           },
@@ -54,18 +50,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "travelscanner-ng:build"
+            "browserTarget": "travelscanner-ngx:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "travelscanner-ng:build:production"
+              "browserTarget": "travelscanner-ngx:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "travelscanner-ng:build"
+            "browserTarget": "travelscanner-ngx:build"
           }
         },
         "test": {
@@ -76,7 +72,7 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles.scss"
+              "src/styles.css"
             ],
             "scripts": [],
             "assets": [
@@ -99,7 +95,7 @@
         }
       }
     },
-    "travelscanner-ng-e2e": {
+    "travelscanner-ngx-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -107,11 +103,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "travelscanner-ng:serve"
+            "devServerTarget": "travelscanner-ngx:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "travelscanner-ng:serve:production"
+              "devServerTarget": "travelscanner-ngx:serve:production"
             }
           }
         },
@@ -127,5 +123,5 @@
       }
     }
   },
-  "defaultProject": "travelscanner-ng"
+  "defaultProject": "travelscanner-ngx"
 }

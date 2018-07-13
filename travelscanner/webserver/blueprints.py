@@ -3,11 +3,11 @@ import json
 from flask import Blueprint
 from matplotlib.dates import DateFormatter
 from matplotlib.figure import Figure
-from peewee import fn
 
 from travelscanner.models.price import Price
 from travelscanner.models.travel import Travel
-from travelscanner.options.travel_options import Countries, MealTypes, RoomTypes
+from travelscanner.models.tripadvisor_rating import TripAdvisorRating
+from travelscanner.options.travel_options import Countries, MealTypes, RoomTypes, TravelOptions
 from travelscanner.webserver import utils
 
 api_blueprint = Blueprint('simple_page', __name__)
@@ -44,13 +44,34 @@ def get_price_history(id):
 def get_travels():
     data = list()
 
-    travels = Travel.select(Travel, fn.Min(Price.price)).limit(1000).join(Price).where(Price.price < 10000).group_by(
-        Travel.id)
+    earlist = TravelOptions.parse_date('29/07/2018')
+    latest = TravelOptions.parse_date('29/07/2018')
+    countries = [10, 22]
+
+    travels = Travel.select(Travel, Price, TripAdvisorRating).join(TripAdvisorRating, on=(
+                (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
+                (Travel.area == TripAdvisorRating.area))).switch(Travel).join(Price). \
+              where(Travel.hotel_stars > 3 and Travel.departure_date.between(earlist, latest) and Travel.country << countries)
 
     for travel in travels:
-        country = Countries(travel.country).name
+        travel_dict = {
+            'country': Countries(travel.country).name,
+            'area': travel.area,
+            'price': {
+                'actual': travel.price.price,
+                'predicted': travel.price.predicted_price
+            },
+            'hotel': {
+                'name': travel.hotel,
+                'stars': travel.hotel_stars,
+                'all_inclusive': travel.price.all_inclusive
+            },
+            'ratings': travel.tripadvisorrating.rating,
+            'duration': travel.duration_days,
+            'departure': travel.departure_date.strftime('%d/%m/%Y'),
+            'link': travel.price.link,
+        }
 
-        data.append([travel.id, travel.hotel, travel.area, travel.hotel_stars, country, str(travel.departure_date),
-                     travel.duration_days, travel.price])
+        data.append(travel_dict)
 
-    return json.dumps({'data': data})
+    return json.dumps(data)

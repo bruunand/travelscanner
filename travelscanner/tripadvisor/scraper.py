@@ -6,6 +6,7 @@ from logging import getLogger
 from requests import get
 
 from travelscanner.crawlers.crawler import log_on_failure
+from travelscanner.data.datasets import load_unscraped_hotels
 from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 
 
@@ -46,7 +47,7 @@ class Scraper:
 
             return item['url']
 
-        print(f"No URL for {query} (returned: {get_result.text})")
+        # print(f"No URL for {query} (returned: {get_result.text})")
 
         self.cancel_tasks = True
 
@@ -82,9 +83,11 @@ class Scraper:
                                              review_count=int(review.group(2)), excellent=ratings[0], good=ratings[1],
                                              average=ratings[2], poor=ratings[3], terrible=ratings[4]).save()
 
-    def scrape(self, unscraped_hotels):
+    def scrape(self):
         self.cancel_tasks = False
 
+        # Load unscraped hotels
+        unscraped_hotels = load_unscraped_hotels()
         getLogger().info(f"Scraping {len(unscraped_hotels)} hotel reviews")
 
         # Distribute tasks to multiple workers
