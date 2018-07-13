@@ -103,3 +103,5 @@ ENV/
 \.idea/dictionaries/User\.xml
 
 \.idea/
+
+travelscanner/learning/xgboost\.pickle\.dat
