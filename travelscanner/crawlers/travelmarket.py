@@ -122,7 +122,8 @@ class Travelmarket(Crawler):
                             departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']).date(),
                             has_pool=item['HASPOOL'] == 1, hotel=item['HOTELNAME'],
                             departure_airport=Airports.parse_da(item['DEPARTURE']),
-                            has_childpool=item['HASCHILDPOOL'] == 1)
+                            has_childpool=item['HASCHILDPOOL'] == 1, distance_city=item['DISTANCECITY'],
+                            distance_beach=item['DISTANCEBEACH'])
 
             # Add prices
             for price in item['PRICES']:
@@ -147,4 +148,4 @@ class Travelmarket(Crawler):
     def crawl(self, current_departure_date):
         self.current_departure_date = current_departure_date
 
-        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=30)
+        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=50) #30=no ban

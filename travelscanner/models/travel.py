@@ -20,6 +20,8 @@ class Travel(MetaModel):
     guests = IntegerField(default=2)
     has_pool = BooleanField()
     has_childpool = BooleanField()
+    distance_city = CharField(null=True)
+    distance_beach = CharField(null=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

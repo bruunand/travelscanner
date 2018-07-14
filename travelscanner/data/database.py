@@ -12,13 +12,13 @@ class Database(object):
         self.driver = driver
         self.cache = dict()
         self.has_initialized_cache = False
-        self.save_pool = ThreadPoolExecutor(2)
+        self.save_pool = ThreadPoolExecutor(1)
 
     @staticmethod
     def save_travels(travels):
-        saved_sum = 0
         logging.getLogger().info(f"Saving {len(travels)} travels")
 
+        saved_sum = 0
         with Database.get_driver().atomic():
             for i, travel in enumerate(travels):
                 saved_sum = saved_sum + travel.upsert()
@@ -28,7 +28,7 @@ class Database(object):
     @staticmethod
     def get_instance():
         if Database.instance is None:
-            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='root', password=''))
+            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='root', password='planner'))
 
         return Database.instance
 

@@ -101,7 +101,7 @@ class Afbudsrejser(Crawler):
             # Instantiate travel
             travel = Travel(crawler=int(self.get_id()), vendor=Vendors.parse_da(item['supplier']['name']),
                             country=Countries.parse_da(item['destination']['country_name']), area=item['destination']['name'],
-                            hotel_stars=item['hotel']['rating'], duration_days=item['number_of_nights'] + 1,
+                            hotel_stars=item['hotel']['rating'], duration_days=item['number_of_nights'],
                             departure_date=Afbudsrejser.parse_datetime(item['origin']['dt']).date(),
                             has_pool=has_pool, hotel=item['hotel']['name'],
                             departure_airport=Airports.parse_da(item['origin']['airport_name']),
