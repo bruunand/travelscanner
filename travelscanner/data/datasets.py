@@ -37,12 +37,15 @@ def load_prices(include_objects=False, unpredicted_only=False):
     if unpredicted_only:
         joined_prices = joined_prices.where(Price.predicted_price.is_null())
 
+    def is_summer_vacation(travel):
+        return travel.departure_date.isocalendar()[1] in [28, 29, 30, 31]
+
     # Initialize arrays
     n_samples = joined_prices.count()
     features = ["All Inclusive", "Meal type", "Duration (days)", "Country", "Guests", "Hotel stars",
                 "Days until departure", "Month", "Week", "Departure airport", "Has pool", "Has childpool",
                 "Room type", "Weekday", "Day", "Vendor", "TripAdvisor rating", "Review count", "Excellent dist.",
-                "Good dist.", "Average dist.", "Poor dist.", "Terrible dist."]
+                "Good dist.", "Average dist.", "Poor dist.", "Terrible dist.", "Is summer vacation"]
 
     data = np.empty((n_samples, len(features)))
     target = np.empty((n_samples,))
@@ -57,7 +60,8 @@ def load_prices(include_objects=False, unpredicted_only=False):
                    d.departure_date.isocalendar()[1], d.departure_airport, d.has_pool, d.has_childpool, d.price.room,
                    d.departure_date.weekday(), d.departure_date.day, d.vendor, d.tripadvisorrating.rating,
                    d.tripadvisorrating.review_count, d.tripadvisorrating.excellent, d.tripadvisorrating.good,
-                   d.tripadvisorrating.average, d.tripadvisorrating.poor, d.tripadvisorrating.terrible]
+                   d.tripadvisorrating.average, d.tripadvisorrating.poor, d.tripadvisorrating.terrible,
+                   is_summer_vacation(d)]
 
         # Set target value
         target[i] = d.price.price

@@ -28,8 +28,8 @@ class Agent(object):
         if len(self.crawlers) == 0:
             raise NoCrawlersException()
 
+        previous_travels = set()
         for date in self.get_travel_options().get_dates_in_range():
-            previous_travels = set()
             travels = set()
 
             getLogger().info(f"Current date: {date}")
@@ -37,8 +37,7 @@ class Agent(object):
             for crawler in self.crawlers:
                 travels.update(crawler.crawl(date))
 
-            # Ensure that overlapping travels are not saved by saving travels from previous iteration
-            Database.save_travels(travels.difference(previous_travels))
+            Database.save_travels(travels - previous_travels)
             previous_travels = travels
 
             if self.crawl_interval is not None:

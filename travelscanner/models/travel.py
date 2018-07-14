@@ -62,7 +62,6 @@ class Travel(MetaModel):
         return created_sum
 
     '''Ensure that duplicate prices are not added and always add the lowest price'''
-
     def add_price(self, new):
         for existing in self.prices:
             if existing.meal == new.meal and existing.all_inclusive == new.all_inclusive and existing.room == new.room:

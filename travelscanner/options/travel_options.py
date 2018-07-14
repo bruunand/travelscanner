@@ -84,6 +84,7 @@ class Countries(IntEnum):
     US_VIRGIN_ISLANDS = 63
     OMAN = 64
     CURACAO = 65
+    ANDORRA = 66
 
     @staticmethod
     def parse_da(name):
@@ -154,7 +155,8 @@ class Countries(IntEnum):
                             'De Amerikanske Jomfruøer': Countries.US_VIRGIN_ISLANDS,
                             'Oman': Countries.OMAN,
                             'Albanien': Countries.ALBANIA,
-                            'Curacao': Countries.CURACAO
+                            'Curacao': Countries.CURACAO,
+                            'Andorra': Countries.ANDORRA
                             }, Countries.UNKNOWN)
 
 
@@ -259,6 +261,7 @@ class Vendors(IntEnum):
     ALMENA_TRAVEL = 22
     SOLFAKTOR = 23
     AMISOL = 24
+    PENGUIN_TRAVEL = 25
 
     @staticmethod
     def parse_da(name):
@@ -289,7 +292,8 @@ class Vendors(IntEnum):
                             'Turistrejser': Vendors.TURISTREJSER,
                             'Apollo': Vendors.APOLLO,
                             'Almena Travel': Vendors.ALMENA_TRAVEL,
-                            'Solfaktor': Vendors.SOLFAKTOR}, Vendors.UNKNOWN)
+                            'Solfaktor': Vendors.SOLFAKTOR,
+                            'Penguin Travel': Vendors.PENGUIN_TRAVEL}, Vendors.UNKNOWN)
 
 
 class TravelOptions(object):
