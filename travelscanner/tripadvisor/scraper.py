@@ -23,12 +23,18 @@ class Scraper:
     @staticmethod
     def normalize(string):
         special_characters = [',', '-', '/', '(', ')']
+        replace_keywords = ["lejligheder", "lejl."]
 
         for character in special_characters:
             if character in string:
                 string = string.split(character)[0]
 
-        return string.lower().replace("lejligheder", "").replace("lejl.", "").replace("hotel", "").strip()
+
+        string = string.lower()
+        for keyword in replace_keywords:
+            string = string.replace(keyword, "")
+
+        return string.strip()
 
     def get_hotel_url(self, query):
         payload = {'action': 'API', 'types': 'hotel', 'urlList': 'true', 'name_depth': '3', 'scoreThreshold': '0.0',
