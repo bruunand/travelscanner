@@ -1,6 +1,7 @@
 import pickle
 from logging import getLogger
 
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score, mean_absolute_error
 from xgboost import XGBRegressor
 import matplotlib.pyplot as plt

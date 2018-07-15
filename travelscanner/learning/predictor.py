@@ -9,7 +9,7 @@ def predict_prices():
     x, _, _, price_objects = load_prices(include_objects=True, unpredicted_only=True)
 
     # Load saved model
-    regressor = pickle.load(open("travelscanner/learning/xgboost.pickle.dat", "rb"))
+    regressor = pickle.load(open("travelscanner/learning/randomforest.pickle.dat", "rb"))
 
     # Predict prices
     all_predict = regressor.predict(x)
