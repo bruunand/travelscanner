@@ -35,7 +35,7 @@ if __name__ == "__main__":
     regressor.fit(x_train, y_train)
 
     # Save model to file
-    pickle.dump(regressor, open("xgboost.pickle.dat", "wb"))
+    pickle.dump(regressor, open("travelscanner/learning/xgboost.pickle.dat", "wb"))
 
     # Print significant values
     for i, feature in enumerate(features):
