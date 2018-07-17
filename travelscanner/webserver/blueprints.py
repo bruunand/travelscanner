@@ -1,77 +1,42 @@
 import json
 
-from flask import Blueprint
-from matplotlib.dates import DateFormatter
-from matplotlib.figure import Figure
+from flask import Blueprint, render_template
 
 from travelscanner.models.price import Price
 from travelscanner.models.travel import Travel
 from travelscanner.models.tripadvisor_rating import TripAdvisorRating
-from travelscanner.options.travel_options import Countries, MealTypes, RoomTypes, TravelOptions
-from travelscanner.webserver import utils
+from travelscanner.options.travel_options import Countries, TravelOptions
 
-api_blueprint = Blueprint('simple_page', __name__)
-
-
-@api_blueprint.route("/price_history/<id>")
-def get_price_history(id):
-    groups = Price.select(Price.meal, Price.room, Price.all_inclusive).distinct().where(Price.travel == id)
-
-    figure = Figure()
-    legends = []
-    for group in groups:
-        # Add a subplot for each distinct group
-        axes = figure.add_subplot(111)
-
-        prices = Price.select().where(Price.travel == id, Price.meal == group.meal, Price.room == group.room,
-                                      Price.all_inclusive == group.all_inclusive).order_by(Price.created_at).desc()
-
-        # Add data to subplot
-        axes.plot_date([price.created_at for price in prices], [price.price for price in prices], '-')
-        axes.xaxis.set_major_formatter(DateFormatter('%d/%m %H:%M'))
-
-        # Add information to legends
-        legends.append(f'{MealTypes(group.meal).name}, {RoomTypes(group.room).name}')
-
-    figure.legend(legends, loc='upper left')
-    figure.autofmt_xdate()
-
-    # Return plot as image
-    return utils.make_response_from_figure(figure)
+ts_blueprint = Blueprint('travelscanner', __name__, static_folder='static')
 
 
-@api_blueprint.route('/api/get_travels')
+@ts_blueprint.route('/')
+@ts_blueprint.route('/index')
+def frontpage():
+    return render_template('index.html')
+
+
+@ts_blueprint.route('/api/get_travels')
 def get_travels():
+    earlist = TravelOptions.parse_date('29/07/2018')
+    latest = TravelOptions.parse_date('08/08/2018')
+
     data = list()
 
-    earlist = TravelOptions.parse_date('29/07/2018')
-    latest = TravelOptions.parse_date('29/07/2018')
-    countries = [10, 22]
-
     travels = Travel.select(Travel, Price, TripAdvisorRating).join(TripAdvisorRating, on=(
-                (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
-                (Travel.area == TripAdvisorRating.area))).switch(Travel).join(Price). \
-              where(Travel.hotel_stars > 3 and Travel.departure_date.between(earlist, latest) and Travel.country << countries)
+            (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
+            (Travel.area == TripAdvisorRating.area))).switch(Travel).join(Price). \
+        where(Travel.hotel_stars > 3 & Travel.departure_date.between(earlist, latest)).limit(5000)
 
     for travel in travels:
-        travel_dict = {
-            'country': Countries(travel.country).name,
-            'area': travel.area,
-            'price': {
-                'actual': travel.price.price,
-                'predicted': travel.price.predicted_price
-            },
-            'hotel': {
-                'name': travel.hotel,
-                'stars': travel.hotel_stars,
-                'all_inclusive': travel.price.all_inclusive
-            },
-            'ratings': travel.tripadvisorrating.rating,
-            'duration': travel.duration_days,
-            'departure': travel.departure_date.strftime('%d/%m/%Y'),
-            'link': travel.price.link,
-        }
+        country = Countries(travel.country).name.title()
 
-        data.append(travel_dict)
+        ratio = None
+        if travel.price.predicted_price is not None:
+            ratio = travel.price.predicted_price / travel.price.price
 
-    return json.dumps(data)
+        data.append([travel.id, travel.price.link, travel.hotel, travel.area, travel.hotel_stars,
+                     travel.tripadvisorrating.rating, country, str(travel.departure_date),
+                     travel.duration_days, travel.price.price, travel.price.predicted_price, ratio])
+
+    return json.dumps({'data': data})
