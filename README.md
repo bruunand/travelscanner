@@ -7,8 +7,8 @@ Last minute travel scanner/crawler for Danish travel agencies and centralised sc
 - Use a regressor to predict travel prices
 - Use a TripAdvisor scraper to gather additional ratings of hotels (including distribution of the five different ratings)
 - Local webserver showing overview of travels powered by Flask
+- Use the predicted prices to find actual good offers
 
 ## Planned features
-- Use the predicted prices to find actual good offers
 - Notifications about travels powered by Pushbullet
 - Add more crawlers for other Danish websites
