@@ -24,7 +24,7 @@ if __name__ == "__main__":
     # Load and split data
     getLogger().info("Retrieving data")
     x, y, features, price_objects = load_prices(include_objects=True)
-    x_train, x_test, y_train, y_test = split_set(x, y, train_ratio=0.65)
+    x_train, x_test, y_train, y_test = split_set(x, y, train_ratio=0.75)
 
     params = {
         "max_depth": 64
