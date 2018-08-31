@@ -22,6 +22,10 @@ class Travel(MetaModel):
     has_childpool = BooleanField()
     distance_city = CharField(null=True)
     distance_beach = CharField(null=True)
+    outbound_departure_date = DateField(null=True)
+    outbound_arrival_date = DateField(null=True)
+    inbound_departure_date = DateField(null=True)
+    inbound_arrival_date = DateField(null=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

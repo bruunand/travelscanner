@@ -10,13 +10,14 @@ import xml.etree.ElementTree as ET
 
 
 class Apollorejser(Crawler):
-    BaseUrl = "http://ksb.apollorejser.dk/huvudsidor/lastmin" #aal_cms2.xml
+    BaseUrl = "http://ksb.apollorejser.dk/huvudsidor/lastmin"
     DateFormat = "%y%m%d"
 
     def __init__(self):
         super().__init__()
 
-        self.airport_dictionary = {Airports.AALBORG: 'aal', Airports.COPENHAGEN: 'cph', Airports.BILLUND: 'bll'}
+        self.airport_dictionary = {Airports.AALBORG: 'aal', Airports.COPENHAGEN: 'cph', Airports.BILLUND: 'bll',
+                                   Airports.ODENSE: 'ode', Airports.KRARUP: 'krp', Airports.AARHUS: 'aar'}
 
     @staticmethod
     def parse_date(date):
@@ -59,13 +60,14 @@ class Apollorejser(Crawler):
             # Extract offer information
             guests = int(offer.find('numAdultPassengers').text)
             price = int(offer.find('price').text) * guests
-            duration_days = int(offer.find('duration').text)
+            duration = int(offer.find('duration').text)
             departure_date = Apollorejser.parse_date(offer.find('date').text)
             country = Countries.parse_da(offer.find('country').text)
+            hotel = offer.find('hotel').text
             url = offer.find('url').text
 
             # Compare against duration requirement
-            if self.get_options().min_duration_days is not None and duration_days < self.get_options().min_duration_days:
+            if self.get_options().min_duration_days is not None and duration < self.get_options().min_duration_days:
                 continue
 
             # Compare price against requirements (note that total price is calculated)
@@ -73,14 +75,21 @@ class Apollorejser(Crawler):
             if (min_price is not None and price < min_price) or (max_price is not None and price > max_price):
                 continue
 
-            travels.update(self.get_offer_details(url, guests, price, duration_days, departure_date, country))
+            travels.add(self.get_offer_details(url, guests, price, duration, departure_date, country, hotel))
 
         return travels
 
-    def get_offer_details(self, url, guests, price, duration_days, departure_date, country):
-        travels = set()
-
+    def get_offer_details(self, url, guests, price, duration_days, departure_date, country, hotel):
         # Parse URL query
         query_dict = dict(parse_qsl(urlsplit(url).query))
 
-        return travels
+        # Retrieve flight information
+        flight_query = {'productCategoryCode': query_dict['productCategoryCode'],
+                        'DepartureAirportCode': query_dict['departureAirportCode'],
+                        'DepartureDate': query_dict['departureDate'],
+                        'DurationGroupCode': query_dict['durationInDays'],
+                        'HotelId': query_dict['travelAreaCode'] + query_dict['hotelCode'],
+                        'PaxAges': query_dict['paxAges']}
+        flight_data = requests.get("https://www.apollorejser.dk/api/Flight/Flights", params=flight_query).text
+
+        return "XD"

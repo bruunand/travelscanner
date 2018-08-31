@@ -166,12 +166,18 @@ class Airports(IntEnum):
     AALBORG = 1
     BILLUND = 2
     COPENHAGEN = 3
+    ODENSE = 4
+    KRARUP = 5
+    AARHUS = 6
 
     @staticmethod
     def parse_da(name):
         return parse(name, {'København': Airports.COPENHAGEN,
                             'Aalborg': Airports.AALBORG,
-                            'Billund': Airports.BILLUND
+                            'Billund': Airports.BILLUND,
+                            'Odense': Airports.ODENSE,
+                            'Midtjyllands Lufthavn': Airports.KRARUP,
+                            'Aarhus': Airports.AARHUS
                             }, Airports.UNKNOWN)
 
 
