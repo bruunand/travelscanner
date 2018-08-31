@@ -8,12 +8,14 @@ from travelscanner.models.travel import Travel
 class Price(MetaModel):
     id = PrimaryKeyField()
     price = FloatField()
+    brochure_price = FloatField(null=True)
     predicted_price = FloatField(null=True)
     meal = IntegerField()
     all_inclusive = BooleanField(default=False)
     travel = ForeignKeyField(Travel)
     room = IntegerField()
     link = TextField()
+    sub_room = TextField(null=True)
 
     def __hash__(self):
         return hash((self.price, self.meal, self.all_inclusive, self.travel, self.room))

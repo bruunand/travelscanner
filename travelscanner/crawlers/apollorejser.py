@@ -150,15 +150,21 @@ class Apollorejser(Crawler):
                     outbound = package['Outbound']
                     inbound = package['Inbound']
 
-                    return {'inbound_departure_date': inbound['DepartureDateTime'],
-                            'inbound_arrival_date': inbound['ArrivalDateTime'],
-                            'outbound_departure_date': outbound['DepartureDateTime'],
-                            'outbound_arrival_date': outbound['ArrivalDateTime']}
+                    return {'inboundDepartureDate': inbound['DepartureDateTime'],
+                            'inboundArrivalDate': inbound['ArrivalDateTime'],
+                            'outboundDepartureDate': outbound['DepartureDateTime'],
+                            'outboundArrivalDate': outbound['ArrivalDateTime'],
+                            'flightPackageCode': preselected_code}
 
         getLogger().error("Failed to retrieve flight data (HotelId: %s)",
                           query_dict['travelAreaCode'] + query_dict['hotelCode'])
 
         return None
+
+    def get_room_data(self, query_dict, flight_package_code):
+        room_data = requests.get("https://www.apollorejser.dk/api/RoomType/FindAvailableRoomTypes?productCategoryCode=FlightAndHotel&flightPackageCode=CPHSPU61%23CPH%232018-09-08%237%23CPHSPU61&hotelId=MAKOLE&paxAges=18,18")
+        
+        pass
 
     def get_offer_details(self, url, guests, price, duration_days, departure_date, country, hotel):
         # Parse URL query
@@ -173,6 +179,9 @@ class Apollorejser(Crawler):
         flight_data = self.get_flight_data(query_dict)
         if flight_data is None:
             return None
+
+        # Retrieve room information
+        room_data = self.get_room_data(query_dict, flight_data['flightPackageCode'])
 
         # Retrieve meal information
 
