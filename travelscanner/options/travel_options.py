@@ -106,6 +106,7 @@ class Countries(IntEnum):
                             'Holland': Countries.NETHERLANDS,
                             'USA': Countries.USA,
                             'Malta': Countries.MALTA,
+                            'De Forenede Arabiske Emirater': Countries.UAE,
                             'Forenede Arabiske Emirater': Countries.UAE,
                             'Portugal': Countries.PORTUGAL,
                             'Irland': Countries.IRELAND,
@@ -213,7 +214,7 @@ class RoomTypes(IntEnum):
     def parse_da(name):
         name = name.lower()
 
-        if 'dobbelt' in name or 'double' in name:
+        if 'dobbelt' in name or 'double' or '2' in name:
             return RoomTypes.DOUBLE_ROOM
         elif 'studio' in name or 'apart' in name or 'lejl' in name:
             return RoomTypes.APARTMENT
@@ -311,7 +312,7 @@ class TravelOptions(object):
         # Date and duration information
         self.earliest_departure_date = datetime.today()
         self.latest_departure_date = datetime.today() + TravelOptions.TIMEDELTA
-        self.duration_days = None
+        self.min_duration_days = None
 
         # Hotel information
         self.minimum_hotel_stars = None

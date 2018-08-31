@@ -116,7 +116,7 @@ class Travelmarket(Crawler):
 
         for item in data['HOTELS']:
             # Instantiate and add travel
-            travel = Travel(crawler=int(self.get_id()), vendor=Vendors.parse_da(item['COMPANY']['NAME']),
+            travel = Travel(crawler=int(self.get_crawler_identifier()), vendor=Vendors.parse_da(item['COMPANY']['NAME']),
                             country=Countries.parse_da(item['COUNTRY']), area=item['DESTINATION'],
                             hotel_stars=item['STARS'], duration_days=item['DURATION'],
                             departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']).date(),
@@ -142,10 +142,15 @@ class Travelmarket(Crawler):
 
         return travels
 
-    def get_id(self):
+    def get_crawler_identifier(self):
         return Crawlers.TRAVELMARKET
 
-    def crawl(self, current_departure_date):
-        self.current_departure_date = current_departure_date
+    def crawl(self, date_range):
+        travels = set()
 
-        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=30)
+        for date in date_range:
+            self.current_departure_date = date
+
+            travels.update(crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=30))
+
+        return travels

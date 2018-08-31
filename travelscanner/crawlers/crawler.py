@@ -45,6 +45,7 @@ def log_on_failure(func):
 class Crawlers(IntEnum):
     TRAVELMARKET = 0
     AFBUDSREJSER = 1
+    APOLLOREJSER = 2
 
 
 class Crawler(metaclass=ABCMeta):
@@ -58,11 +59,11 @@ class Crawler(metaclass=ABCMeta):
         self.country_dictionary = {}
 
     @abstractmethod
-    def get_id(self):
+    def get_crawler_identifier(self):
         pass
 
     @abstractmethod
-    def crawl(self, from_date):
+    def crawl(self, date_range):
         pass
 
     def set_agent(self, agent):

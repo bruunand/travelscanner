@@ -64,7 +64,7 @@ class Afbudsrejser(Crawler):
         else:
             return join_values(self.get_options().departure_airports, self.airport_dictionary, ",")
 
-    def get_id(self):
+    def get_crawler_identifier(self):
         return Crawlers.AFBUDSREJSER
 
     def synthesize_params(self, page):
@@ -99,7 +99,7 @@ class Afbudsrejser(Crawler):
             all_inclusive = 'all_inclusive' in facilities
 
             # Instantiate travel
-            travel = Travel(crawler=int(self.get_id()), vendor=Vendors.parse_da(item['supplier']['name']),
+            travel = Travel(crawler=int(self.get_crawler_identifier()), vendor=Vendors.parse_da(item['supplier']['name']),
                             country=Countries.parse_da(item['destination']['country_name']), area=item['destination']['name'],
                             hotel_stars=item['hotel']['rating'], duration_days=item['number_of_nights'],
                             departure_date=Afbudsrejser.parse_datetime(item['origin']['dt']).date(),
@@ -126,7 +126,12 @@ class Afbudsrejser(Crawler):
         return datetime.strptime(date, Afbudsrejser.DateTimeFormat)
 
     @log_on_failure
-    def crawl(self, current_departure_date):
-        self.current_departure_date = current_departure_date
+    def crawl(self, date_range):
+        travels = set()
 
-        return crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=30)
+        for date in date_range:
+            self.current_departure_date = date
+
+            travels.update(crawl_multi_threaded(crawl_function=self.get_travels, start_page=1, max_workers=30))
+
+        return travels

@@ -4,6 +4,7 @@ from logging import getLogger
 
 from travelscanner.agent import Agent
 from travelscanner.crawlers.afbudsrejser import Afbudsrejser
+from travelscanner.crawlers.apollorejser import Apollorejser
 from travelscanner.crawlers.travelmarket import Travelmarket
 from travelscanner.learning import predictor
 from travelscanner.options.travel_options import Airports
@@ -19,8 +20,9 @@ if __name__ == '__main__':
     options.number_of_guests = 2
 
     # Add crawlers
-    agent.add_crawler(Afbudsrejser())
-    agent.add_crawler(Travelmarket())
+    #agent.add_crawler(Afbudsrejser())
+    #agent.add_crawler(Travelmarket())
+    agent.add_crawler(Apollorejser())
 
     # Initialize TA scraper
     scraper = Scraper()
