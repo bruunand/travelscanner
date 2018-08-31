@@ -38,15 +38,16 @@ class Travelmarket(Crawler):
         if not self.get_options().number_of_guests is None:
             getLogger().warning(f"Number of guests option cannot be satisfied by {self.__class__.__name__}")
 
-    def get_duration(self):
-        duration_days = self.get_options().duration_days
+    def get_min_duration(self):
+        # TODO: May be a mismatch between interpretations of duration
+        min_duration_days = self.get_options().min_duration_days
 
-        if duration_days is not None:
-            if duration_days < 7:
+        if min_duration_days is not None:
+            if min_duration_days < 7:
                 return '1'
-            elif duration_days < 14:
+            elif min_duration_days < 14:
                 return '2'
-            elif duration_days < 21:
+            elif min_duration_days < 21:
                 return '3'
 
         return ''
@@ -54,8 +55,8 @@ class Travelmarket(Crawler):
     def get_all_inclusive(self):
         return 1 if self.get_options().all_inclusive else 0
 
-    def get_minimum_stars(self):
-        return get_default_if_none(self.get_options().minimum_hotel_stars, 0)
+    def get_min_hotel_stars(self):
+        return get_default_if_none(self.get_options().min_hotel_stars, 0)
 
     def get_departure_date(self):
         return self.current_departure_date.strftime(Travelmarket.DateFormat)
@@ -89,10 +90,10 @@ class Travelmarket(Crawler):
         filters = dict(bSpecified=True, bUnSpecified=False, strKeyDestination="", sHotelName="",
                        bAllinclusive=self.get_all_inclusive(), flexdays=self.get_flex_days(),
                        bFlightOnly=False, bPool=0, bChildPool=0, nCurrentPage=page, nSortBy=1,
-                       nMinStars=self.get_minimum_stars(), nMatrixWeek=0, nMatrixPrice=0, lDestinations="",
+                       nMinStars=self.get_min_hotel_stars(), nMatrixWeek=0, nMatrixPrice=0, lDestinations="",
                        nMinPrice=self.get_min_price(), nMaxPrice=self.get_max_price(), lSubAreas="", lAreas="",
                        lDepartures=self.get_departure_airports(),
-                       lDeparture=self.get_departure_date(), lDurations=self.get_duration(), lSuppliers="",
+                       lDeparture=self.get_departure_date(), lDurations=self.get_min_duration(), lSuppliers="",
                        lCountries=self.get_countries())
 
         return json.dumps(filters)

@@ -4,10 +4,9 @@ from travelscanner.data.database import Database
 
 from travelscanner.models.price import Price
 from travelscanner.models.travel import Travel
-
-# Setup logging
 from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 
+# Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Connect to database

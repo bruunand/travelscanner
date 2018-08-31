@@ -37,11 +37,12 @@ class Afbudsrejser(Crawler):
         if not self.get_options().min_price is None:
             getLogger().warning(f"Minimum price option cannot be satisfied by {self.__class__.__name__}")
 
-    def get_duration(self):
-        return get_default_if_none(self.get_options().duration_days, "")
+    def get_min_duration(self):
+        # TODO: May be a mismatch between interpretations of duration
+        return get_default_if_none(self.get_options().min_duration_days, "")
 
-    def get_minimum_stars(self):
-        return get_default_if_none(self.get_options().minimum_hotel_stars, "1")
+    def get_min_hotel_stars(self):
+        return get_default_if_none(self.get_options().min_hotel_stars, "1")
 
     def get_departure_date(self):
         return self.current_departure_date.strftime(Afbudsrejser.DateFormat)
@@ -73,8 +74,8 @@ class Afbudsrejser(Crawler):
         if self.get_options().all_inclusive:
             facilities.append("all_inclusive")
 
-        return dict(dest=self.get_countries(), duration=self.get_duration(), edepdate=self.get_departure_date(),
-                    rating=self.get_minimum_stars(), sort='date', facilities='-'.join(facilities),
+        return dict(dest=self.get_countries(), duration=self.get_min_duration(), edepdate=self.get_departure_date(),
+                    rating=self.get_min_hotel_stars(), sort='date', facilities='-'.join(facilities),
                     price=self.get_max_price(), orig=self.get_departure_airports(), page=page,
                     delta=TravelOptions.TIMEDELTA.days)
 

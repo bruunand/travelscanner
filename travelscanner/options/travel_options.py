@@ -315,7 +315,7 @@ class TravelOptions(object):
         self.min_duration_days = None
 
         # Hotel information
-        self.minimum_hotel_stars = None
+        self.min_hotel_stars = None
         self.minimum_tripadvisor_rating = None
         self.all_inclusive = False
 
