@@ -26,7 +26,7 @@ def get_travels():
     travels = Travel.select(Travel, Price, TripAdvisorRating).join(TripAdvisorRating, on=(
             (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
             (Travel.area == TripAdvisorRating.area))).switch(Travel).join(Price). \
-        where(Travel.hotel_stars > 3 & Travel.departure_date.between(earlist, latest)).limit(5000)
+        where(Travel.hotel_rating > 3 & Travel.departure_date.between(earlist, latest)).limit(5000)
 
     for travel in travels:
         country = Countries(travel.country).name.title()
@@ -35,7 +35,7 @@ def get_travels():
         if travel.price.predicted_price is not None:
             ratio = travel.price.predicted_price / travel.price.price
 
-        data.append([travel.id, travel.price.link, travel.hotel, travel.area, travel.hotel_stars,
+        data.append([travel.id, travel.price.link, travel.hotel, travel.area, travel.hotel_rating,
                      travel.tripadvisorrating.rating, country, str(travel.departure_date),
                      travel.duration_days, travel.price.price, travel.price.predicted_price, ratio])
 

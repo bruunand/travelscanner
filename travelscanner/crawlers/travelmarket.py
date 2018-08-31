@@ -55,8 +55,8 @@ class Travelmarket(Crawler):
     def get_all_inclusive(self):
         return 1 if self.get_options().all_inclusive else 0
 
-    def get_min_hotel_stars(self):
-        return get_default_if_none(self.get_options().min_hotel_stars, 0)
+    def get_min_hotel_rating(self):
+        return get_default_if_none(self.get_options().min_hotel_rating, 0)
 
     def get_departure_date(self):
         return self.current_departure_date.strftime(Travelmarket.DateFormat)
@@ -90,7 +90,7 @@ class Travelmarket(Crawler):
         filters = dict(bSpecified=True, bUnSpecified=False, strKeyDestination="", sHotelName="",
                        bAllinclusive=self.get_all_inclusive(), flexdays=self.get_flex_days(),
                        bFlightOnly=False, bPool=0, bChildPool=0, nCurrentPage=page, nSortBy=1,
-                       nMinStars=self.get_min_hotel_stars(), nMatrixWeek=0, nMatrixPrice=0, lDestinations="",
+                       nMinStars=self.get_min_hotel_rating(), nMatrixWeek=0, nMatrixPrice=0, lDestinations="",
                        nMinPrice=self.get_min_price(), nMaxPrice=self.get_max_price(), lSubAreas="", lAreas="",
                        lDepartures=self.get_departure_airports(),
                        lDeparture=self.get_departure_date(), lDurations=self.get_min_duration(), lSuppliers="",
@@ -119,7 +119,7 @@ class Travelmarket(Crawler):
             # Instantiate and add travel
             travel = Travel(crawler=int(self.get_crawler_identifier()), vendor=Vendors.parse_da(item['COMPANY']['NAME']),
                             country=Countries.parse_da(item['COUNTRY']), area=item['DESTINATION'],
-                            hotel_stars=item['STARS'], duration_days=item['DURATION'],
+                            hotel_rating=item['STARS'], duration_days=item['DURATION'],
                             departure_date=Travelmarket.parse_date(item['DEPARTUREDATE']).date(),
                             has_pool=item['HASPOOL'] == 1, hotel=item['HOTELNAME'],
                             departure_airport=Airports.parse_da(item['DEPARTURE']),

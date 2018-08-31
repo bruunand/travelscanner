@@ -7,3 +7,4 @@ requests
 peewee
 pymysql
 keras
+bs4

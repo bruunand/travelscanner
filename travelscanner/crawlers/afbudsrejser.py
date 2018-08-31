@@ -41,8 +41,8 @@ class Afbudsrejser(Crawler):
         # TODO: May be a mismatch between interpretations of duration
         return get_default_if_none(self.get_options().min_duration_days, "")
 
-    def get_min_hotel_stars(self):
-        return get_default_if_none(self.get_options().min_hotel_stars, "1")
+    def get_min_hotel_rating(self):
+        return get_default_if_none(self.get_options().min_hotel_rating, "1")
 
     def get_departure_date(self):
         return self.current_departure_date.strftime(Afbudsrejser.DateFormat)
@@ -75,7 +75,7 @@ class Afbudsrejser(Crawler):
             facilities.append("all_inclusive")
 
         return dict(dest=self.get_countries(), duration=self.get_min_duration(), edepdate=self.get_departure_date(),
-                    rating=self.get_min_hotel_stars(), sort='date', facilities='-'.join(facilities),
+                    rating=self.get_min_hotel_rating(), sort='date', facilities='-'.join(facilities),
                     price=self.get_max_price(), orig=self.get_departure_airports(), page=page,
                     delta=TravelOptions.TIMEDELTA.days)
 
@@ -102,7 +102,7 @@ class Afbudsrejser(Crawler):
             # Instantiate travel
             travel = Travel(crawler=int(self.get_crawler_identifier()), vendor=Vendors.parse_da(item['supplier']['name']),
                             country=Countries.parse_da(item['destination']['country_name']), area=item['destination']['name'],
-                            hotel_stars=item['hotel']['rating'], duration_days=item['number_of_nights'],
+                            hotel_rating=item['hotel']['rating'], duration_days=item['number_of_nights'],
                             departure_date=Afbudsrejser.parse_datetime(item['origin']['dt']).date(),
                             has_pool=has_pool, hotel=item['hotel']['name'],
                             departure_airport=Airports.parse_da(item['origin']['airport_name']),

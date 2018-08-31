@@ -13,7 +13,7 @@ class Travel(MetaModel):
     hotel = CharField()
     country = IntegerField()
     area = CharField()
-    hotel_stars = IntegerField()
+    hotel_rating = FloatField(null=True)
     duration_days = IntegerField()
     departure_date = DateField()
     departure_airport = IntegerField()
@@ -33,7 +33,7 @@ class Travel(MetaModel):
 
     def __hash__(self):
         return hash((self.hotel, self.area, self.country, self.departure_date, self.departure_airport,
-                     self.crawler, self.guests, self.duration_days, self.hotel_stars, self.vendor))
+                     self.crawler, self.guests, self.duration_days, self.hotel_rating, self.vendor))
 
     '''Returns the amount of newly inserted travels.'''
 
@@ -45,7 +45,7 @@ class Travel(MetaModel):
         existing = Travel.select().where(Travel.departure_airport == self.departure_airport,
                                          Travel.guests == self.guests, Travel.crawler == self.crawler,
                                          Travel.departure_date == self.departure_date, Travel.country == self.country,
-                                         Travel.hotel_stars == self.hotel_stars, Travel.hotel == self.hotel,
+                                         Travel.hotel_rating == self.hotel_rating, Travel.hotel == self.hotel,
                                          Travel.vendor == self.vendor, Travel.duration_days == self.duration_days,
                                          Travel.area == self.area).first()
 
@@ -81,4 +81,4 @@ class Travel(MetaModel):
 
     class Meta:
         indexes = ((('hotel', 'area', 'country', 'departure_date', 'departure_airport', 'crawler', 'guests', 'vendor',
-                     'duration_days', 'hotel_stars'), True),)
+                     'duration_days', 'hotel_rating'), True),)
