@@ -10,7 +10,7 @@ import json
 import requests
 
 from travelscanner.crawlers.crawler import Crawler, Crawlers
-from travelscanner.options.travel_options import Airports, Countries
+from travelscanner.options.travel_options import Airports, Countries, RoomTypes
 
 import xml.etree.ElementTree as ET
 
@@ -83,7 +83,7 @@ class Apollorejser(Crawler):
                 if self.get_options().min_duration_days is not None and duration < self.get_options().min_duration_days:
                     continue
 
-                # Compare price against requirements (note that total price is calculated)
+                # Compare price against requirements
                 min_price, max_price = self.get_options().min_price, self.get_options().max_price
                 if (min_price is not None and price < min_price) or (max_price is not None and price > max_price):
                     continue
@@ -101,12 +101,23 @@ class Apollorejser(Crawler):
 
         return travels
 
-    def get_hotel_rating(self, url):
-        # Follow the URl to retrieve star information
-        booking_page_data = requests.get(url, headers=Crawler.BaseHeaders).text
+    def get_booking_page(self, url):
+        return requests.get(url, headers=Crawler.BaseHeaders)
 
-        # Get classification
-        soup = BeautifulSoup(booking_page_data, 'html.parser')
+    def get_duration_group(self, booking_page):
+        # Extract duration group from redirected URL
+        # The duration group code is typically the duration, but in a few cases some random number
+        query_dict = Crawler.parse_url_query(booking_page.url)
+        if 'durationGroupCode' in query_dict:
+            return query_dict['durationGroupCode']
+
+        getLogger().error("Failed to retrieve duration group code")
+
+        return None
+
+    def get_hotel_rating(self, booking_page):
+        # Parse HTML of booking page
+        soup = BeautifulSoup(booking_page.text, 'html.parser')
         classification_tag = soup.find('i', attrs={'class': 'classification'})
         if classification_tag:
             for class_name in classification_tag.attrs['class']:
@@ -117,20 +128,20 @@ class Apollorejser(Crawler):
                 # E.g. the class value35 results in a rating of 3.5
                 return int(class_name[-2:]) / 10
 
-        getLogger().error("Failed to retrieve hotel rating (URL: %s)", url)
+        getLogger().error("Failed to retrieve hotel rating")
 
         return None
 
-    def get_meal_data(self, query_dict):
-        pass
+    def get_meal_data(self, product_code):
+        print(product_code)
 
-    def get_flight_data(self, query_dict):
+    def get_flight_data(self, query_dict, duration_group):
         flight_query = {'productCategoryCode': query_dict['productCategoryCode'],
-                        'DepartureAirportCode': query_dict['departureAirportCode'],
-                        'DepartureDate': query_dict['departureDate'],
-                        'DurationGroupCode': query_dict['durationInDays'],
-                        'HotelId': query_dict['travelAreaCode'] + query_dict['hotelCode'],
-                        'PaxAges': query_dict['paxAges']}
+                        'departureAirportCode': query_dict['departureAirportCode'],
+                        'departureDate': query_dict['departureDate'],
+                        'durationGroupCode': duration_group,
+                        'hotelId': query_dict['travelAreaCode'] + query_dict['hotelCode'],
+                        'paxAges': query_dict['paxAges']}
 
         flight_data = requests.get("https://www.apollorejser.dk/api/Flight/Flights",
                                    params=flight_query, headers=Crawler.BaseHeaders).text
@@ -150,39 +161,70 @@ class Apollorejser(Crawler):
                     outbound = package['Outbound']
                     inbound = package['Inbound']
 
-                    return {'inboundDepartureDate': inbound['DepartureDateTime'],
-                            'inboundArrivalDate': inbound['ArrivalDateTime'],
-                            'outboundDepartureDate': outbound['DepartureDateTime'],
-                            'outboundArrivalDate': outbound['ArrivalDateTime'],
-                            'flightPackageCode': preselected_code}
+                    return {'inbound_depature': inbound['DepartureDateTime'],
+                            'inbound_arrival': inbound['ArrivalDateTime'],
+                            'outbound_departure': outbound['DepartureDateTime'],
+                            'outbound_arrival': outbound['ArrivalDateTime'],
+                            'flight_package': preselected_code}
 
         getLogger().error("Failed to retrieve flight data (HotelId: %s)",
                           query_dict['travelAreaCode'] + query_dict['hotelCode'])
 
         return None
 
-    def get_room_data(self, query_dict, flight_package_code):
-        room_data = requests.get("https://www.apollorejser.dk/api/RoomType/FindAvailableRoomTypes?productCategoryCode=FlightAndHotel&flightPackageCode=CPHSPU61%23CPH%232018-09-08%237%23CPHSPU61&hotelId=MAKOLE&paxAges=18,18")
-        
-        pass
+    def get_rooms(self, query_dict, flight_package_code):
+        room_query = {'productCategoryCode': query_dict['productCategoryCode'],
+                      'hotelId': query_dict['travelAreaCode'] + query_dict['hotelCode'],
+                      'paxAges': query_dict['paxAges'],
+                      'flightPackageCode':flight_package_code}
+        room_data = requests.get("https://www.apollorejser.dk/api/RoomType/FindAvailableRoomTypes", params=room_query,
+                                 headers=Crawler.BaseHeaders).text
+        room_json = json.loads(room_data)
+
+        # Sort rooms by price to avoid duplicates
+        sorted_rooms = sorted(room_json, key=lambda r: r['CurrentTotalPrice'])
+
+        # Iterate over rooms and add to collection
+        rooms = []
+        for room in sorted_rooms:
+            # Parse room type
+            room_type = RoomTypes.parse_da(room['RoomTypeName'])
+
+            # Different configurations specify the amount of beds, rooms etc.
+            # Not all vendors support this, so we just take the cheapest configuration
+            alternatives = []
+            for configuration in room['RoomConfigurations']:
+                for alternative in configuration['Alternatives']:
+                    alternatives.append({'type': room_type, 'price': alternative['Price'],
+                                         'code': alternative['ProductCode'], 'subtype': alternative['SubRoomTypeName']})
+
+            # Add alternative with cheapest price
+            if alternatives:
+                rooms.append(min(alternatives, key=lambda a: a['price']))
+
+        return rooms
 
     def get_offer_details(self, url, guests, price, duration_days, departure_date, country, hotel):
         # Parse URL query
-        query_dict = dict(parse_qsl(urlsplit(url).query))
+        query_dict = Crawler.parse_url_query(url)
 
-        # Retrieve hotel rating
-        hotel_rating = self.get_hotel_rating(url)
-        if hotel_rating is None:
+        # Retrieve booking page information (rating and duration group)
+        booking_page = self.get_booking_page(url)
+        hotel_rating = self.get_hotel_rating(booking_page)
+        duration_group_code = self.get_duration_group(booking_page)
+        if hotel_rating is None or duration_group_code is None:
             return None
 
         # Retrieve flight information
-        flight_data = self.get_flight_data(query_dict)
+        flight_data = self.get_flight_data(query_dict, duration_group_code)
         if flight_data is None:
             return None
 
         # Retrieve room information
-        room_data = self.get_room_data(query_dict, flight_data['flightPackageCode'])
+        rooms = self.get_rooms(query_dict, flight_data['flight_package'])
 
-        # Retrieve meal information
+        # Retrieve meal information from each room
+        for room in rooms:
+            self.get_meal_data(room['code'])
 
         return hotel_rating

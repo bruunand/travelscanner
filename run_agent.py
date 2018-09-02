@@ -1,15 +1,11 @@
-import pickle
 import traceback
 from logging import getLogger
 
 from travelscanner.agent import Agent
-from travelscanner.crawlers.afbudsrejser import Afbudsrejser
 from travelscanner.crawlers.apollorejser import Apollorejser
-from travelscanner.crawlers.travelmarket import Travelmarket
 from travelscanner.learning import predictor
 from travelscanner.options.travel_options import Airports
 from travelscanner.tripadvisor.scraper import Scraper
-
 
 if __name__ == '__main__':
     # Set options for our desired travel

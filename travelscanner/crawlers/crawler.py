@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from enum import IntEnum
 from logging import getLogger
 from traceback import print_exc
+from urllib.parse import parse_qsl, urlsplit
 
 
 def get_default_if_none(value, default):
@@ -76,3 +77,7 @@ class Crawler(metaclass=ABCMeta):
 
     def get_options(self):
         return self.agent.travel_options
+
+    @staticmethod
+    def parse_url_query(url):
+        return dict(parse_qsl(urlsplit(url).query))

@@ -107,7 +107,6 @@ class Countries(IntEnum):
                             'USA': Countries.USA,
                             'Malta': Countries.MALTA,
                             'De Forenede Arabiske Emirater': Countries.UAE,
-                            'Forenede Arabiske Emirater': Countries.UAE,
                             'Portugal': Countries.PORTUGAL,
                             'Irland': Countries.IRELAND,
                             'Hong Kong': Countries.HONG_KONG,
@@ -120,7 +119,6 @@ class Countries(IntEnum):
                             'Indonesien': Countries.INDONESIA,
                             'Japan': Countries.JAPAN,
                             'Malaysia': Countries.MALAYSIA,
-                            'Den dominikanske republik': Countries.DOMINICAN_REPUBLIC,
                             'Den Dominikanske Republik': Countries.DOMINICAN_REPUBLIC,
                             'Tanzania': Countries.TANZANIA,
                             'Mauritius': Countries.MAURITIUS,
@@ -206,38 +204,40 @@ class RoomTypes(IntEnum):
     UNKNOWN = 0
     APARTMENT = 1
     DOUBLE_ROOM = 2
-    ECONOMY = 3
-    STANDARD_ROOM = 4
-    FAMILY = 5
-    TWO_PERSON_ROOM = 6
-    PREMIUM = 7
-    TENT = 8
-    BUNGALOW = 9
+    ONE_BEDROOM = 3
+    TWO_BEDROOMS = 4
+    THREE_BEDROOMS = 5
+    JUNIOR = 6
+    BUNGALOW = 7
+    PREMIUM = 8
+    FAMILY = 9
+    SUITE = 10
 
     '''Not the prettiest approach to take here, but the names are not consistent in any way.'''
-
     @staticmethod
     def parse_da(name):
         name = name.lower()
 
-        if 'dobbelt' in name or 'double' or '2' in name:
+        if 'dobbelt' in name or 'double' in name:
             return RoomTypes.DOUBLE_ROOM
-        elif 'studio' in name or 'apart' in name or 'lejl' in name:
-            return RoomTypes.APARTMENT
-        elif 'std' in name or 'enkelt' in name or 'stand' in name:
-            return RoomTypes.STANDARD_ROOM
-        elif 'economy' in name:
-            return RoomTypes.ECONOMY
-        elif 'fam' in name:
-            return RoomTypes.FAMILY
-        elif '2' in name:
-            return RoomTypes.TWO_PERSON_ROOM
-        elif 'suite' in name or 'panoramic' in name or 'deluxe' in name or 'superior' in name or 'premium' in name:
-            return RoomTypes.PREMIUM
-        elif 'telt' in name:
-            return RoomTypes.TENT
+        elif '3-vær' in name:
+            return RoomTypes.THREE_BEDROOMS
+        elif '2-vær' in name:
+            return RoomTypes.TWO_BEDROOMS
+        elif '1-vær' in name or 'enkeltværelse' in name:
+            return RoomTypes.ONE_BEDROOM
         elif 'bungalow' in name:
             return RoomTypes.BUNGALOW
+        elif 'familie-vær' in name:
+            return RoomTypes.FAMILY
+        elif 'junior' in name:
+            return RoomTypes.JUNIOR
+        elif 'superior' in name or 'deluxe' in name:
+            return RoomTypes.PREMIUM
+        elif 'suite' in name:
+            return RoomTypes.SUITE
+
+        getLogger().info(f"Unknown room type %s", name)
 
         return RoomTypes.UNKNOWN
 
