@@ -195,7 +195,7 @@ class Apollorejser(Crawler):
             alternatives = []
             for configuration in room['RoomConfigurations']:
                 for alternative in configuration['Alternatives']:
-                    alternatives.append({'type': room_type, 'price': alternative['Price'],
+                    alternatives.append({'type': room['RoomTypeName'], 'price': alternative['Price'],
                                          'code': alternative['ProductCode'], 'subtype': alternative['SubRoomTypeName']})
 
             # Add alternative with cheapest price
@@ -209,6 +209,7 @@ class Apollorejser(Crawler):
         query_dict = Crawler.parse_url_query(url)
 
         # Retrieve booking page information (rating and duration group)
+        # TODO: Move these back into one function which also gets pool info
         booking_page = self.get_booking_page(url)
         hotel_rating = self.get_hotel_rating(booking_page)
         duration_group_code = self.get_duration_group(booking_page)
