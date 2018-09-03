@@ -105,8 +105,6 @@ class Apollorejser(Crawler):
                 if result is not None:
                     travels.add(result)
 
-        print(travels)
-
         return travels
 
     def get_duration_group_code(self, url):
@@ -235,6 +233,10 @@ class Apollorejser(Crawler):
                       'flightPackageCode':flight_package_code}
         room_data = requests.get("https://www.apollorejser.dk/api/RoomType/FindAvailableRoomTypes", params=room_query,
                                  headers=Crawler.BaseHeaders).text
+        if room_data == 'ProductSoldOut':
+            getLogger().info('Product is sold out')
+
+            return None
         room_json = json.loads(room_data)
 
         # Sort rooms by price to avoid duplicates
@@ -265,6 +267,10 @@ class Apollorejser(Crawler):
                        'productId': product_code}
         addon_data = requests.get('https://www.apollorejser.dk/api/AddOn/GetAddOns', params=addon_query,
                                   headers=Crawler.BaseHeaders).text
+        if addon_data == 'ProductSoldOut':
+            getLogger().info('Product is sold out')
+
+            return None
         addon_json = json.loads(addon_data)
 
         # Only read data from first passenger
@@ -274,8 +280,7 @@ class Apollorejser(Crawler):
         # If no meals, return 'no meal' as a free meal
         if meals:
             return meals
-        else:
-            return [{'type': MealTypes.NONE, 'price': 0}]
+        return [{'type': MealTypes.NONE, 'price': 0}]
 
     def get_offer_details(self, url, guests, price, duration_days, departure_date, country, hotel, airport, area):
         # Parse URL query
@@ -306,10 +311,14 @@ class Apollorejser(Crawler):
 
         # Retrieve room information
         rooms = self.get_rooms(query_dict, flight_data['flight_package'])
+        if rooms is None:
+            return None
 
         # Retrieve meal information from each room
         for room in rooms:
             meal_data = self.get_meal_data(query_dict, room['code'])
+            if meal_data is None:
+                continue
 
             for meal in meal_data:
                 travel.add_price(Price(price=meal['price'] * guests + room['price'], room=room['type'], travel=travel,

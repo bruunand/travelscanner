@@ -21,8 +21,7 @@ class Price(MetaModel):
     '''Returns the amount of newly inserted prices.'''
 
     def upsert(self):
-        existing = Price.select().where(Price.price == self.price, Price.meal == self.meal,
-                                        Price.all_inclusive == self.all_inclusive, Price.travel == self.travel,
+        existing = Price.select().where(Price.price == self.price, Price.meal == self.meal, Price.travel == self.travel,
                                         Price.room == self.room).first()
 
         if existing is None:
