@@ -101,23 +101,16 @@ class Apollorejser(Crawler):
 
         return travels
 
-    def get_booking_page(self, url):
-        return requests.get(url, headers=Crawler.BaseHeaders)
-
-    def get_duration_group(self, booking_page):
-        # Extract duration group from redirected URL
-        # The duration group code is typically the duration, but in a few cases some random number
-        query_dict = Crawler.parse_url_query(booking_page.url)
+    def get_duration_group_code(self, url):
+        query_dict = Crawler.parse_url_query(url)
         if 'durationGroupCode' in query_dict:
             return query_dict['durationGroupCode']
+        else:
+            getLogger().error('Failed to retrieve duration group code')
 
-        getLogger().error("Failed to retrieve duration group code")
+            return None
 
-        return None
-
-    def get_hotel_rating(self, booking_page):
-        # Parse HTML of booking page
-        soup = BeautifulSoup(booking_page.text, 'html.parser')
+    def get_hotel_rating(self, soup):
         classification_tag = soup.find('i', attrs={'class': 'classification'})
         if classification_tag:
             for class_name in classification_tag.attrs['class']:
@@ -128,7 +121,65 @@ class Apollorejser(Crawler):
                 # E.g. the class value35 results in a rating of 3.5
                 return int(class_name[-2:]) / 10
 
-        getLogger().error("Failed to retrieve hotel rating")
+        getLogger().error('Failed to retrieve hotel rating')
+
+        return None
+
+    def get_is_property_checked(self, soup, property_class):
+        property_tag = soup.find('div', attrs={'class': property_class})
+        if property_tag:
+            checkbox_tag = property_tag.find('i', attrs={'class': 'icon-sprite'})
+            if checkbox_tag:
+                return 'icon-checked' in checkbox_tag.attrs['class']
+
+        getLogger().error('Failed to determine value of property with class %s', property_class)
+
+        return None
+
+    def get_fact(self, soup, fact_class):
+        fact_tag = soup.find('div', attrs={'class': fact_class})
+        if fact_tag:
+            value_tag = fact_tag.find('span', attrs={'class': 'fact_value'})
+            if value_tag:
+                return value_tag.text
+
+        getLogger().error('Failed to determine value of fact with class %s', fact_class)
+
+        return None
+
+    def get_initial_data(self, url):
+        landing_page = requests.get(url, headers=Crawler.BaseHeaders)
+        required_keys = ['hotel_rating', 'duration_group_code', 'has_pool', 'has_childpool']
+
+        # Parse HTML of booking page
+        soup = BeautifulSoup(landing_page.text, 'html.parser')
+
+        # Get return values
+        return_values = {'hotel_rating': self.get_hotel_rating(soup),
+                         'duration_group_code': self.get_duration_group_code(landing_page.url),
+                         'has_pool': self.get_is_property_checked(soup, 'pool_type_pool'),
+                         'has_bar': self.get_is_property_checked(soup, 'restaurant_bar'),
+                         'has_childpool': self.get_is_property_checked(soup, 'pool_type_children_s_pool'),
+                         'internet_in_rooms': self.get_is_property_checked(soup, 'facilities_internet_in_rooms'),
+                         'distance_beach': self.get_fact(soup, 'distance_to_beach'),
+                         'distance_center': self.get_fact(soup, 'distance_to_center')}
+
+        # If any of the dictionary values is None, return None
+        for key, value in return_values.items():
+            if value is None and key in required_keys:
+                return None
+
+        return return_values
+
+
+    def get_duration_group(self, booking_page):
+        # Extract duration group from redirected URL
+        # The duration group code is typically the duration, but in a few cases some random number
+        query_dict = Crawler.parse_url_query(booking_page.url)
+        if 'durationGroupCode' in query_dict:
+            return query_dict['durationGroupCode']
+
+        getLogger().error("Failed to retrieve duration group code")
 
         return None
 
@@ -161,6 +212,7 @@ class Apollorejser(Crawler):
                     outbound = package['Outbound']
                     inbound = package['Inbound']
 
+                    # TODO: Parse as dates
                     return {'inbound_depature': inbound['DepartureDateTime'],
                             'inbound_arrival': inbound['ArrivalDateTime'],
                             'outbound_departure': outbound['DepartureDateTime'],
@@ -209,15 +261,12 @@ class Apollorejser(Crawler):
         query_dict = Crawler.parse_url_query(url)
 
         # Retrieve booking page information (rating and duration group)
-        # TODO: Move these back into one function which also gets pool info
-        booking_page = self.get_booking_page(url)
-        hotel_rating = self.get_hotel_rating(booking_page)
-        duration_group_code = self.get_duration_group(booking_page)
-        if hotel_rating is None or duration_group_code is None:
+        initial_data = self.get_initial_data(url)
+        if initial_data is None:
             return None
 
         # Retrieve flight information
-        flight_data = self.get_flight_data(query_dict, duration_group_code)
+        flight_data = self.get_flight_data(query_dict, initial_data['duration_group_code'])
         if flight_data is None:
             return None
 
@@ -228,4 +277,4 @@ class Apollorejser(Crawler):
         for room in rooms:
             self.get_meal_data(room['code'])
 
-        return hotel_rating
+        return initial_data['hotel_rating']
