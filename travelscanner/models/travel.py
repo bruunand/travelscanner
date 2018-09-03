@@ -1,4 +1,4 @@
-from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField, DateField
+from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField, DateField, TextField
 
 from travelscanner.models.meta import MetaModel
 from travelscanner.options.travel_options import Countries
@@ -26,7 +26,7 @@ class Travel(MetaModel):
     outbound_arrival_date = DateField(null=True)
     inbound_departure_date = DateField(null=True)
     inbound_arrival_date = DateField(null=True)
-    link = CharField()
+    link = TextField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
