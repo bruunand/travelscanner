@@ -21,6 +21,7 @@ class Apollorejser(Crawler):
     BaseUrl = "http://ksb.apollorejser.dk/huvudsidor/lastmin"
     DateFormat = "%y%m%d"
     ThreadedWorkers = 30
+    FlightDateFormat = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self):
         super().__init__()
@@ -31,6 +32,10 @@ class Apollorejser(Crawler):
     @staticmethod
     def parse_date(date):
         return datetime.strptime(date, Apollorejser.DateFormat)
+
+    @staticmethod
+    def parse_flight_date(date):
+        return datetime.strptime(date, Apollorejser.FlightDateFormat)
 
     def get_crawler_identifier(self):
         return Crawlers.APOLLOREJSER
@@ -213,10 +218,10 @@ class Apollorejser(Crawler):
                     inbound = package['Inbound']
 
                     # TODO: Parse as dates
-                    return {'inbound_depature': inbound['DepartureDateTime'],
-                            'inbound_arrival': inbound['ArrivalDateTime'],
-                            'outbound_departure': outbound['DepartureDateTime'],
-                            'outbound_arrival': outbound['ArrivalDateTime'],
+                    return {'inbound_depature': Apollorejser.parse_flight_date(inbound['DepartureDateTime']),
+                            'inbound_arrival': Apollorejser.parse_flight_date(inbound['ArrivalDateTime']),
+                            'outbound_departure': Apollorejser.parse_flight_date(outbound['DepartureDateTime']),
+                            'outbound_arrival': Apollorejser.parse_flight_date(outbound['ArrivalDateTime']),
                             'flight_package': preselected_code}
 
         getLogger().error("Failed to retrieve flight data (HotelId: %s)",
