@@ -11,14 +11,12 @@ class Price(MetaModel):
     brochure_price = FloatField(null=True)
     predicted_price = FloatField(null=True)
     meal = IntegerField()
-    all_inclusive = BooleanField(default=False)
     travel = ForeignKeyField(Travel)
-    room = IntegerField()
-    link = TextField()
-    sub_room = TextField(null=True)
+    room = CharField()
+    sub_room = CharField(null=True)
 
     def __hash__(self):
-        return hash((self.price, self.meal, self.all_inclusive, self.travel, self.room))
+        return hash((self.price, self.meal, self.travel, self.room, self.sub_room))
 
     '''Returns the amount of newly inserted prices.'''
 
@@ -35,4 +33,4 @@ class Price(MetaModel):
             return 0
 
     class Meta:
-        indexes = ((('price', 'meal', 'room', 'travel', 'all_inclusive'), True),)
+        indexes = ((('price', 'meal', 'room', 'travel', 'sub_room'), True),)

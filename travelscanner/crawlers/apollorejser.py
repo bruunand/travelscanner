@@ -10,7 +10,9 @@ import json
 import requests
 
 from travelscanner.crawlers.crawler import Crawler, Crawlers
-from travelscanner.options.travel_options import Airports, Countries, RoomTypes
+from travelscanner.models.price import Price
+from travelscanner.models.travel import Travel
+from travelscanner.options.travel_options import Airports, Countries, RoomTypes, Vendors, MealTypes
 
 import xml.etree.ElementTree as ET
 
@@ -81,6 +83,7 @@ class Apollorejser(Crawler):
                 duration = int(offer.find('duration').text)
                 departure_date = Apollorejser.parse_date(offer.find('date').text)
                 country = Countries.parse_da(offer.find('country').text)
+                area = offer.find('destination').text
                 hotel = offer.find('hotel').text
                 url = offer.find('url').text
 
@@ -94,7 +97,7 @@ class Apollorejser(Crawler):
                     continue
 
                 futures.append(executor.submit(self.get_offer_details, url, guests, price, duration, departure_date,
-                                               country, hotel))
+                                               country, hotel, airport, area))
 
             for future in futures:
                 result = future.result()
@@ -176,7 +179,6 @@ class Apollorejser(Crawler):
 
         return return_values
 
-
     def get_duration_group(self, booking_page):
         # Extract duration group from redirected URL
         # The duration group code is typically the duration, but in a few cases some random number
@@ -187,9 +189,6 @@ class Apollorejser(Crawler):
         getLogger().error("Failed to retrieve duration group code")
 
         return None
-
-    def get_meal_data(self, product_code):
-        print(product_code)
 
     def get_flight_data(self, query_dict, duration_group):
         flight_query = {'productCategoryCode': query_dict['productCategoryCode'],
@@ -218,7 +217,7 @@ class Apollorejser(Crawler):
                     inbound = package['Inbound']
 
                     # TODO: Parse as dates
-                    return {'inbound_depature': Apollorejser.parse_flight_date(inbound['DepartureDateTime']),
+                    return {'inbound_departure': Apollorejser.parse_flight_date(inbound['DepartureDateTime']),
                             'inbound_arrival': Apollorejser.parse_flight_date(inbound['ArrivalDateTime']),
                             'outbound_departure': Apollorejser.parse_flight_date(outbound['DepartureDateTime']),
                             'outbound_arrival': Apollorejser.parse_flight_date(outbound['ArrivalDateTime']),
@@ -261,7 +260,24 @@ class Apollorejser(Crawler):
 
         return rooms
 
-    def get_offer_details(self, url, guests, price, duration_days, departure_date, country, hotel):
+    def get_meal_data(self, query_dict, product_code):
+        addon_query = {'productCategoryCode': query_dict['productCategoryCode'],
+                       'productId': product_code}
+        addon_data = requests.get('https://www.apollorejser.dk/api/AddOn/GetAddOns', params=addon_query,
+                                  headers=Crawler.BaseHeaders).text
+        addon_json = json.loads(addon_data)
+
+        # Only read data from first passenger
+        passengers = next(iter(addon_json))
+        meals = [{'type': MealTypes.parse_da(m['Name']), 'price': m['Price']} for m in passengers['AddOns'] if m['Type'] == 'hotelFood']
+
+        # If no meals, return 'no meal' as a free meal
+        if meals:
+            return meals
+        else:
+            return [{'type': MealTypes.NONE, 'price': 0}]
+
+    def get_offer_details(self, url, guests, price, duration_days, departure_date, country, hotel, airport, area):
         # Parse URL query
         query_dict = Crawler.parse_url_query(url)
 
@@ -275,11 +291,28 @@ class Apollorejser(Crawler):
         if flight_data is None:
             return None
 
+        # Given the provided information, we can begin construction a travel instance
+        # Further information is provided in the price children of the travel
+        travel = Travel(crawler=int(self.get_crawler_identifier()), vendor=Vendors.APOLLO,
+                        country=country, area=area, hotel_rating=initial_data['hotel_rating'],
+                        duration_days=duration_days, departure_date=departure_date, has_pool=initial_data['has_pool'],
+                        hotel=hotel, departure_airport=airport, has_childpool=initial_data['has_childpool'],
+                        distance_city=initial_data['distance_center'], distance_beach=initial_data['distance_beach'],
+                        has_bar=initial_data['has_bar'], internet_in_rooms=initial_data['internet_in_rooms'],
+                        guests=guests, outbound_departure_date=flight_data['outbound_departure'],
+                        link=url, outbound_arrival_date=flight_data['outbound_arrival'],
+                        inbound_departure_date=flight_data['inbound_departure'],
+                        inbound_arrival_date=flight_data['inbound_arrival'])
+
         # Retrieve room information
         rooms = self.get_rooms(query_dict, flight_data['flight_package'])
 
         # Retrieve meal information from each room
         for room in rooms:
-            self.get_meal_data(room['code'])
+            meal_data = self.get_meal_data(query_dict, room['code'])
 
-        return initial_data['hotel_rating']
+            for meal in meal_data:
+                travel.add_price(Price(price=meal['price'] * guests + room['price'], room=room['type'], travel=travel,
+                                       meal=meal['type'], sub_room=room['subtype']))
+
+        return travel

@@ -182,23 +182,29 @@ class Airports(IntEnum):
 class MealTypes(IntEnum):
     UNKNOWN = 0
     NONE = 1
-    NOT_SPECIFIED = 2
-    BREAKFAST = 3
-    HALF_BOARD = 4
-    FULL_BOARD = 5
-    ALL_INCLUSIVE = 6
+    BREAKFAST = 2
+    HALF_BOARD = 3
+    FULL_BOARD = 4
+    ALL_INCLUSIVE = 5
 
     @staticmethod
     def parse_da(name):
-        return parse(name, {'Ikke angivet': MealTypes.NOT_SPECIFIED,
-                            'Med morgenmad': MealTypes.BREAKFAST,
-                            'Halvpension': MealTypes.HALF_BOARD,
-                            'Uden pension': MealTypes.NONE,
-                            'All Inclusive': MealTypes.ALL_INCLUSIVE,
-                            'All Inclusive med drikkevarer': MealTypes.ALL_INCLUSIVE,
-                            'Helpension': MealTypes.FULL_BOARD,
-                            '': MealTypes.NONE}, MealTypes.UNKNOWN)
+        name = name.lower()
 
+        if 'ingen måltider' in name:
+            return MealTypes.NONE
+        elif 'morgenmad' in name:
+            return MealTypes.BREAKFAST
+        elif 'halvpension' in name:
+            return MealTypes.HALF_BOARD
+        elif 'helpension' in name:
+            return MealTypes.FULL_BOARD
+        elif 'all inclusive' in name:
+            return MealTypes.ALL_INCLUSIVE
+
+        getLogger().info(f"Unknown meal type %s", name)
+
+        return MealTypes.UNKNOWN
 
 class RoomTypes(IntEnum):
     UNKNOWN = 0

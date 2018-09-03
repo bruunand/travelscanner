@@ -1,7 +1,5 @@
-from logging import getLogger
 from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField, DateField
 
-import travelscanner.data
 from travelscanner.models.meta import MetaModel
 from travelscanner.options.travel_options import Countries
 
@@ -13,7 +11,7 @@ class Travel(MetaModel):
     hotel = CharField()
     country = IntegerField()
     area = CharField()
-    hotel_rating = FloatField(null=True)
+    hotel_rating = FloatField()
     duration_days = IntegerField()
     departure_date = DateField()
     departure_airport = IntegerField()
@@ -21,12 +19,14 @@ class Travel(MetaModel):
     has_pool = BooleanField()
     has_childpool = BooleanField(null=True)
     has_bar = BooleanField(null=True)
+    internet_in_rooms = BooleanField(null=True)
     distance_city = CharField(null=True)
     distance_beach = CharField(null=True)
     outbound_departure_date = DateField(null=True)
     outbound_arrival_date = DateField(null=True)
     inbound_departure_date = DateField(null=True)
     inbound_arrival_date = DateField(null=True)
+    link = CharField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,7 +69,7 @@ class Travel(MetaModel):
     '''Ensure that duplicate prices are not added and always add the lowest price'''
     def add_price(self, new):
         for existing in self.prices:
-            if existing.meal == new.meal and existing.all_inclusive == new.all_inclusive and existing.room == new.room:
+            if existing.meal == new.meal and existing.room == new.room and existing.sub_room == new.sub_room:
                 if new.price < existing.price:
                     self.prices.remove(existing)
                 else:
