@@ -29,7 +29,6 @@ class Scraper:
             if character in string:
                 string = string.split(character)[0]
 
-
         string = string.lower()
         for keyword in replace_keywords:
             string = string.replace(keyword, "")

@@ -37,9 +37,8 @@ class Travel(MetaModel):
         return hash((self.hotel, self.area, self.country, self.departure_date, self.departure_airport,
                      self.crawler, self.guests, self.duration_days, self.hotel_rating, self.vendor))
 
-    '''Returns the amount of newly inserted travels.'''
-
     def upsert(self):
+        """ Returns the amount of newly inserted travels"""
         # Skip entries which have no country specified
         if self.country == Countries.UNKNOWN:
             return 0

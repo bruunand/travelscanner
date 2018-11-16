@@ -18,9 +18,8 @@ class Price(MetaModel):
     def __hash__(self):
         return hash((self.price, self.meal, self.travel, self.room, self.sub_room))
 
-    '''Returns the amount of newly inserted prices.'''
-
     def upsert(self):
+        """ Returns the amount of newly inserted prices"""
         existing = Price.select().where(Price.price == self.price, Price.meal == self.meal, Price.travel == self.travel,
                                         Price.room == self.room).first()
 

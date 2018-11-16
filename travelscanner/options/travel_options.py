@@ -85,6 +85,7 @@ class Countries(IntEnum):
     OMAN = 64
     CURACAO = 65
     ANDORRA = 66
+    QATAR = 67
 
     @staticmethod
     def parse_da(name):
@@ -155,7 +156,8 @@ class Countries(IntEnum):
                             'Oman': Countries.OMAN,
                             'Albanien': Countries.ALBANIA,
                             'Curacao': Countries.CURACAO,
-                            'Andorra': Countries.ANDORRA
+                            'Andorra': Countries.ANDORRA,
+                            'Qatar': Countries.QATAR
                             }, Countries.UNKNOWN)
 
 
