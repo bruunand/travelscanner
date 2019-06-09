@@ -5,12 +5,10 @@ Last minute travel scanner/crawler for Danish travel agencies and centralised sc
 - Crawl travels from Travelmarket and Afbudsrejser
 - Save travels and associated prices to database (supports whichever database drivers peewee supports)
 - Use a regressor to predict travel prices (XGBoost, several models have been tested)
-- Use a TripAdvisor scraper to gather additional ratings of hotels
 - Use the predicted prices to find actual good offers
 
 ## Roadmap
 - Notifications about travels powered by Pushbullet
-- Add more crawlers for other Danish websites/scrap centralised scanners
 - A webservice providing meaningful statistics into travels as well as highlighting travels with high value for money
 
 ## Development history
