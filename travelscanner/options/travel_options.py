@@ -85,6 +85,17 @@ class Countries(IntEnum):
     OMAN = 64
     CURACAO = 65
     ANDORRA = 66
+    SWITZERLAND = 67
+    SERBIA = 68
+    QATAR = 69
+    ROMANIA = 70
+    UKRAINE = 71
+    RUSSIA = 72
+    MACEDONIA = 73
+    NORWAY = 74
+    ARGENTINA = 75
+    DENMARK = 76
+    PUERTO_RICO = 77
 
     @staticmethod
     def parse_da(name):
@@ -151,12 +162,26 @@ class Countries(IntEnum):
                             'Finland': Countries.FINLAND,
                             'Tunis': Countries.TUNISIA,
                             'Folkerepublikken Kina': Countries.CHINA,
+                            'Kina': Countries.CHINA,
+                            'Serbien': Countries.SERBIA,
+                            'Schweiz': Countries.SWITZERLAND,
+                            'Hongkong': Countries.HONG_KONG,
+                            'Qatar': Countries.QATAR,
                             'Estland': Countries.ESTONIA,
                             'De Amerikanske Jomfruøer': Countries.US_VIRGIN_ISLANDS,
                             'Oman': Countries.OMAN,
                             'Albanien': Countries.ALBANIA,
                             'Curacao': Countries.CURACAO,
-                            'Andorra': Countries.ANDORRA
+                            'Andorra': Countries.ANDORRA,
+                            'Rumænien': Countries.ROMANIA,
+                            'Ukraine': Countries.UKRAINE,
+                            'Rusland': Countries.RUSSIA,
+                            'Makedonien': Countries.MACEDONIA,
+                            'Norge': Countries.NORWAY,
+                            'Danmark': Countries.DENMARK,
+                            'Curaçao': Countries.CURACAO,
+                            'Puerto Rico': Countries.PUERTO_RICO,
+                            'Argentina': Countries.ARGENTINA
                             }, Countries.UNKNOWN)
 
 
@@ -262,10 +287,15 @@ class Vendors(IntEnum):
     SOLFAKTOR = 23
     AMISOL = 24
     PENGUIN_TRAVEL = 25
+    VERDN = 26
+    NORDCOTOURS = 27
+    HIDEAWAYS = 28
+    IN_ITALIA = 29
+
 
     @staticmethod
     def parse_da(name):
-        shorthands = ['Spies', 'FolkeFerie', 'Amisol']
+        shorthands = ['Spies', 'FolkeFerie', 'Amisol', 'Almena', 'Nordco']
         for shorthand in shorthands:
             if name.startswith(shorthand):
                 name = shorthand
@@ -291,9 +321,13 @@ class Vendors(IntEnum):
                             'TripX': Vendors.TRIPX,
                             'Turistrejser': Vendors.TURISTREJSER,
                             'Apollo': Vendors.APOLLO,
-                            'Almena Travel': Vendors.ALMENA_TRAVEL,
+                            'Almena': Vendors.ALMENA_TRAVEL,
                             'Solfaktor': Vendors.SOLFAKTOR,
-                            'Penguin Travel': Vendors.PENGUIN_TRAVEL}, Vendors.UNKNOWN)
+                            'Penguin Travel': Vendors.PENGUIN_TRAVEL,
+                            'Nordco': Vendors.NORDCOTOURS,
+                            'Hideaways': Vendors.HIDEAWAYS,
+                            'In-Italia.dk': Vendors.IN_ITALIA,
+                            'VERDN': Vendors.VERDN}, Vendors.UNKNOWN)
 
 
 class TravelOptions(object):

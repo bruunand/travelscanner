@@ -40,3 +40,10 @@ def get_travels():
                      travel.duration_days, travel.price.price, travel.price.predicted_price, ratio])
 
     return json.dumps({'data': data})
+
+
+    #travels = Travel.select(Travel, Price).join(Price). \
+    #    where((Travel.hotel_stars >= 3) & (Travel.country << [Countries.GREECE, Countries.CYPRUS])). \
+    #    where((Price.price.between(3000, 4500)) & (Travel.departure_date.between(earliest, latest))). \
+    #    where((Price.meal << [MealTypes.BREAKFAST, MealTypes.FULL_BOARD, MealTypes.HALF_BOARD])). \
+    #    where((Travel.duration_days >= 7)).\

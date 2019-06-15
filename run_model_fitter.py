@@ -1,10 +1,10 @@
 import pickle
 from logging import getLogger
 
+import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score, mean_absolute_error
 from xgboost import XGBRegressor
-import matplotlib.pyplot as plt
 
 from travelscanner.data.datasets import split_set, load_prices
 

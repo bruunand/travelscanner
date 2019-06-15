@@ -23,8 +23,8 @@ class Afbudsrejser(Crawler):
         super().__init__()
 
         self.airport_dictionary = {Airports.AALBORG: 'AAL', Airports.BILLUND: 'BLL', Airports.COPENHAGEN: 'CPH'}
-        self.country_dictionary = {Countries.SPAIN: 19841, Countries.GREECE: 19862, Countries.TURKEY: 19999,
-                                   Countries.CYPRUS: 19828, Countries.BULGARIA: 19795}
+        self.country_dictionary = {Countries.SPAIN: '19841', Countries.GREECE: '19862', Countries.TURKEY: '19999',
+                                   Countries.CYPRUS: '19828', Countries.BULGARIA: '19795'}
         self.current_departure_date = datetime.today()
 
     def set_agent(self, agent):

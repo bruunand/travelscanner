@@ -1,6 +1,5 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from threading import Thread
 
 import peewee
 
@@ -28,7 +27,7 @@ class Database(object):
     @staticmethod
     def get_instance():
         if Database.instance is None:
-            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='travelscanner', password='travelscanner'))
+            Database.instance = Database(peewee.MySQLDatabase('travelscanner', user='root', password='travelscanner'))
 
         return Database.instance
 

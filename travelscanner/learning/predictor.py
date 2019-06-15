@@ -27,3 +27,7 @@ def predict_prices():
                 getLogger().info(f"Progress: {i}/{len(price_objects)}")
 
     getLogger().info("Prediction finished")
+
+
+if __name__ == "__main__":
+    predict_prices()

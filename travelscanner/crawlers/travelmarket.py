@@ -28,7 +28,7 @@ class Travelmarket(Crawler):
         self.country_dictionary = {Countries.CAPE_VERDE: "500104", Countries.CYPRUS: "500122",
                                    Countries.EGYPT: "500297", Countries.FRANCE: "500439", Countries.GREECE: "500575",
                                    Countries.MALTA: "501574", Countries.PORTUGAL: "502079", Countries.SPAIN: "500347",
-                                   Countries.THAILAND: "502685", Countries.UK: "500481"}
+                                   Countries.THAILAND: "502685", Countries.UK: "500481", Countries.TURKEY: "502776"}
         self.current_departure_date = datetime.today()
 
     def set_agent(self, agent):
