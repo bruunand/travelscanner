@@ -109,8 +109,8 @@ class Afbudsrejser(Crawler):
 
             # Add price
             travel.add_price(Price(price=item['price'], all_inclusive=all_inclusive, link=item['booking_url'],
-                                   room=RoomTypes.parse_da(item['hotel']['room_name']), travel=travel,
-                                   meal=MealTypes.ALL_INCLUSIVE if all_inclusive else MealTypes.UNKNOWN))
+                                   room=item['hotel']['room_name'], travel=travel,
+                                   meal='All Inclusive' if all_inclusive else 'Ikke angivet'))
 
             # Add travel
             travels.add(travel)

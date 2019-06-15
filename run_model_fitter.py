@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     # Fit RF model to data
     getLogger().info(f'Fitting data using {len(y)} instances')
-    regressor = XGBRegressor(**params)
+    regressor = RandomForestRegressor(**params)
     regressor.fit(x_train, y_train)
 
     # Save model to file

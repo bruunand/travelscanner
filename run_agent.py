@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     scraper = Scraper()
     # Run actions in loop
-    actions = [agent.crawl, scraper.scrape]#, predictor.predict_prices, agent.crawl]  # predictor.predict_prices
+    actions = [scraper.scrape]#, predictor.predict_prices, agent.crawl]  # predictor.predict_prices
     while True:
         for action in actions:
             try:

@@ -9,10 +9,10 @@ class Price(MetaModel):
     id = PrimaryKeyField()
     price = FloatField()
     predicted_price = FloatField(null=True)
-    meal = IntegerField()
+    meal = CharField()
     all_inclusive = BooleanField(default=False)
     travel = ForeignKeyField(Travel)
-    room = IntegerField()
+    room = CharField()
     link = TextField()
 
     def __hash__(self):

@@ -135,8 +135,8 @@ class Travelmarket(Crawler):
                         link = queries['url'][0]
 
                 travel.add_price(Price(price=price['PRICE'], all_inclusive=price['ISALLINCLUSIVE'] == 1,
-                                       room=RoomTypes.parse_da(price['ROOMTYPE']), travel=travel,
-                                       meal=MealTypes.parse_da(price['MEALTYPE']), link=link))
+                                       room=price['ROOMTYPE'], travel=travel,
+                                       meal=price['MEALTYPE'], link=link))
             # Add travel
             travels.add(travel)
 

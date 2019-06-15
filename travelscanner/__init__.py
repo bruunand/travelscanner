@@ -14,5 +14,5 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 Database.connect()
 
 # Create model tables
-Database.get_driver().drop_tables([TripAdvisorRating, Travel, Price])
-Database.get_driver().create_tables([TripAdvisorRating, Travel, Price])
+#Database.get_driver().drop_tables([TripAdvisorRating, Travel, Price])
+#Database.get_driver().create_tables([TripAdvisorRating, Travel, Price])

@@ -6,6 +6,7 @@ import sklearn.model_selection
 from travelscanner.models.price import Price, JOIN
 from travelscanner.models.travel import Travel
 from travelscanner.models.tripadvisor_rating import TripAdvisorRating
+from travelscanner.options.travel_options import RoomTypes, MealTypes
 
 
 def load_unscraped_hotels():
@@ -42,26 +43,38 @@ def load_prices(include_objects=False, unpredicted_only=False):
 
     # Initialize arrays
     n_samples = joined_prices.count()
-    features = ["All Inclusive", "Meal type", "Duration (days)", "Country", "Guests", "Hotel stars",
+    features = ["Area",
+                "All Inclusive", "Meal type", "Duration (days)", "Country", "Guests", "Hotel stars",
                 "Days until departure", "Month", "Week", "Departure airport", "Has pool", "Has childpool",
                 "Room type", "Weekday", "Day", "Vendor", "TripAdvisor rating", "Review count", "Excellent dist.",
-                "Good dist.", "Average dist.", "Poor dist.", "Terrible dist.", "Is summer vacation"]
+                "Good dist.", "Average dist.", "Poor dist.", "Terrible dist.", "Official class", "Is summer vacation"]
 
     data = np.empty((n_samples, len(features)))
     target = np.empty((n_samples,))
+
+    # Create area vocabulary
+    area_dict = dict()
+    areas = 0
 
     # Fill arrays with data
     for i, d in enumerate(joined_prices):
         price_objects.append(d.price)
 
         # Set features
-        data[i] = [d.price.all_inclusive, d.price.meal, d.duration_days, d.country, d.guests, d.hotel_stars,
+        meal = MealTypes.ALL_INCLUSIVE if d.price.all_inclusive else MealTypes.parse_da(d.price.meal)
+        room = RoomTypes.parse_da(d.price.room)
+
+        if d.area not in area_dict:
+            area_dict[d.area] = areas
+            areas += 1
+
+        data[i] = [area_dict[d.area], d.price.all_inclusive, meal, d.duration_days, d.country, d.guests, d.hotel_stars,
                    (d.departure_date - d.price.created_at.date()).days, d.departure_date.month,
-                   d.departure_date.isocalendar()[1], d.departure_airport, d.has_pool, d.has_childpool, d.price.room,
+                   d.departure_date.isocalendar()[1], d.departure_airport, d.has_pool, d.has_childpool, room,
                    d.departure_date.weekday(), d.departure_date.day, d.vendor, d.tripadvisorrating.rating,
                    d.tripadvisorrating.review_count, d.tripadvisorrating.excellent, d.tripadvisorrating.good,
                    d.tripadvisorrating.average, d.tripadvisorrating.poor, d.tripadvisorrating.terrible,
-                   is_summer_vacation(d)]
+                   d.tripadvisorrating.official_class, is_summer_vacation(d)]
 
         # Set target value
         target[i] = d.price.price
