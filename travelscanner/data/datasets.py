@@ -47,7 +47,8 @@ def load_prices(include_objects=False, unpredicted_only=False):
                 "All Inclusive", "Meal type", "Duration (days)", "Country", "Guests", "Hotel stars",
                 "Days until departure", "Month", "Week", "Departure airport", "Has pool", "Has childpool",
                 "Room type", "Weekday", "Day", "Vendor", "TripAdvisor rating", "Review count", "Excellent dist.",
-                "Good dist.", "Average dist.", "Poor dist.", "Terrible dist.", "Official class", "Is summer vacation"]
+                "Good dist.", "Average dist.", "Poor dist.", "Terrible dist.", "Official class", "Is summer vacation",
+                "Sea view"]
 
     data = np.empty((n_samples, len(features)))
     target = np.empty((n_samples,))
@@ -62,19 +63,23 @@ def load_prices(include_objects=False, unpredicted_only=False):
 
         # Set features
         meal = MealTypes.ALL_INCLUSIVE if d.price.all_inclusive else MealTypes.parse_da(d.price.meal)
+        if meal in [MealTypes.UNKNOWN, MealTypes.NOT_SPECIFIED]:
+            # Sometimes the meal is in the room
+            room_meal = MealTypes.parse_da(d.price.room)
+            meal = room_meal if room_meal != MealTypes.UNKNOWN else meal
         room = RoomTypes.parse_da(d.price.room)
 
-        if d.area not in area_dict:
-            area_dict[d.area] = areas
+        if d.area.lower() not in area_dict:
+            area_dict[d.area.lower()] = areas
             areas += 1
 
-        data[i] = [area_dict[d.area], d.price.all_inclusive, meal, d.duration_days, d.country, d.guests, d.hotel_stars,
+        data[i] = [area_dict[d.area.lower()], d.price.all_inclusive, meal, d.duration_days, d.country, d.guests, d.hotel_stars,
                    (d.departure_date - d.price.created_at.date()).days, d.departure_date.month,
                    d.departure_date.isocalendar()[1], d.departure_airport, d.has_pool, d.has_childpool, room,
                    d.departure_date.weekday(), d.departure_date.day, d.vendor, d.tripadvisorrating.rating,
                    d.tripadvisorrating.review_count, d.tripadvisorrating.excellent, d.tripadvisorrating.good,
                    d.tripadvisorrating.average, d.tripadvisorrating.poor, d.tripadvisorrating.terrible,
-                   d.tripadvisorrating.official_class, is_summer_vacation(d)]
+                   d.tripadvisorrating.official_class, is_summer_vacation(d), 'havudsigt' in d.price.room]
 
         # Set target value
         target[i] = d.price.price

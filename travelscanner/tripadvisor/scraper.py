@@ -72,7 +72,7 @@ class Scraper:
 
         url = self.get_hotel_url(f"{Scraper.normalize(hotel)} {Scraper.normalize(area)}")
 
-        if url is not None:
+        if url:
             get_result = get(f"{Scraper.BaseUrl}{url}")
 
             if get_result.status_code == 200:
@@ -80,30 +80,32 @@ class Scraper:
                 user_ratings = Scraper.DistributionRegex.findall(get_result.text)
                 official_class = Scraper.ClassRegex.search(get_result.text)
 
-                if rating is None:
+                if not rating:
                     rating = -1
                     review_count = -1
                 else:
                     review_count = int(rating.group(2))
                     rating = float(rating.group(1))
 
-                if user_ratings is None:
+                if not user_ratings:
                     user_ratings = [0 for _ in range(5)]
                 else:
                     user_ratings = [float(rating[1]) / 100 for rating in user_ratings]
 
-                if official_class is None:
+                if not official_class:
                     official_class = -1
                 else:
                     official_class = int(official_class.group(1))
 
                 print(official_class)
 
-                if rating is not None and user_ratings is not None and len(user_ratings) == 5:
+                if rating and user_ratings and len(user_ratings) == 5:
                     TripAdvisorRating.create(country=country, hotel=hotel, area=area, rating=rating,
                                              review_count=review_count, excellent=user_ratings[0], good=user_ratings[1],
                                              average=user_ratings[2], poor=user_ratings[3], terrible=user_ratings[4],
                                              official_class=official_class).save()
+        else:
+            print(f'No URL: {hotel}, {area}, {country}')
 
     def scrape(self):
         self.cancel_tasks = False
@@ -118,3 +120,8 @@ class Scraper:
                 executor.submit(self.add_rating, name, area, country)
 
         getLogger().info(f"Scraping finished")
+
+
+if __name__ == "__main__":
+    while True:
+        Scraper().scrape()

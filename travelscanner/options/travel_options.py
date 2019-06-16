@@ -210,14 +210,22 @@ class MealTypes(IntEnum):
 
     @staticmethod
     def parse_da(name):
-        return parse(name, {'Ikke angivet': MealTypes.NOT_SPECIFIED,
-                            'Med morgenmad': MealTypes.BREAKFAST,
-                            'Halvpension': MealTypes.HALF_BOARD,
-                            'Uden pension': MealTypes.NONE,
-                            'All Inclusive': MealTypes.ALL_INCLUSIVE,
-                            'All Inclusive med drikkevarer': MealTypes.ALL_INCLUSIVE,
-                            'Helpension': MealTypes.FULL_BOARD,
-                            '': MealTypes.NONE}, MealTypes.UNKNOWN)
+        name = name.lower()
+
+        if 'morgenmad' in name:
+            return MealTypes.BREAKFAST
+        elif 'halvpension' in name:
+            return MealTypes.HALF_BOARD
+        elif 'helpension' in name:
+            return MealTypes.FULL_BOARD
+        elif 'all inclusive' in name:
+            return MealTypes.ALL_INCLUSIVE
+        elif 'ikke angivet' in name:
+            return MealTypes.NOT_SPECIFIED
+        elif 'uden pension' in name:
+            return MealTypes.NONE
+
+        return MealTypes.UNKNOWN
 
 
 class RoomTypes(IntEnum):
@@ -244,10 +252,6 @@ class RoomTypes(IntEnum):
             return RoomTypes.APARTMENT
         elif 'std' in name or 'enkelt' in name or 'stand' in name:
             return RoomTypes.STANDARD_ROOM
-        elif 'economy' in name:
-            return RoomTypes.ECONOMY
-        elif 'fam' in name:
-            return RoomTypes.FAMILY
         elif '2' in name:
             return RoomTypes.TWO_PERSON_ROOM
         elif 'suite' in name or 'panoramic' in name or 'deluxe' in name or 'superior' in name or 'premium' in name:

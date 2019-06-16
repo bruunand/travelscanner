@@ -13,7 +13,7 @@ if __name__ == '__main__':
     agent = Agent()
     options = agent.get_travel_options()
     options.departure_airports = [Airports.AALBORG, Airports.BILLUND, Airports.COPENHAGEN]
-    options.set_earliest_departure_date('24/07/2019')
+    options.set_earliest_departure_date('03/08/2019')
     options.set_latest_departure_date('13/08/2019')
     options.number_of_guests = 2
     options.destination_countries = [Countries.GREECE, Countries.SPAIN, Countries.CYPRUS, Countries.TURKEY]
@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     scraper = Scraper()
     # Run actions in loop
-    actions = [scraper.scrape]#, predictor.predict_prices, agent.crawl]  # predictor.predict_prices
+    actions = [scraper.scrape, predictor.predict_prices, agent.crawl]#, predictor.predict_prices, agent.crawl]  # predictor.predict_prices
     while True:
         for action in actions:
             try:
