@@ -14,7 +14,8 @@ from travelscanner.models.tripadvisor_rating import TripAdvisorRating
 class Scraper:
     BaseUrl = "https://www.tripadvisor.com"
     ReviewRegex = re.compile(r'"ratingValue":"(\d+\.\d)","reviewCount":"(\d+)"')
-    DistributionRegex = re.compile(r'<span class="fill" style="width:(\d+)%;">')
+    DistributionRegex = re.compile(r'<span class="hotels-review-list-parts-(.*?)" style="width:(\d+.\d+)%">')
+    ClassRegex = re.compile(r'<span class="ui_star_rating star_(\d)0')
     Blacklist = ['krydstogt', 'rejse']
 
     def __init__(self):
@@ -28,7 +29,6 @@ class Scraper:
         for character in special_characters:
             if character in string:
                 string = string.split(character)[0]
-
 
         string = string.lower()
         for keyword in replace_keywords:
@@ -72,22 +72,40 @@ class Scraper:
 
         url = self.get_hotel_url(f"{Scraper.normalize(hotel)} {Scraper.normalize(area)}")
 
-        if url is not None:
+        if url:
             get_result = get(f"{Scraper.BaseUrl}{url}")
 
             if get_result.status_code == 200:
-                review = Scraper.ReviewRegex.search(get_result.text)
-                ratings = Scraper.DistributionRegex.findall(get_result.text)
+                rating = Scraper.ReviewRegex.search(get_result.text)
+                user_ratings = Scraper.DistributionRegex.findall(get_result.text)
+                official_class = Scraper.ClassRegex.search(get_result.text)
 
-                if review is None or ratings is None or not len(ratings) == 5:
-                    return
+                if not rating:
+                    rating = -1
+                    review_count = -1
+                else:
+                    review_count = int(rating.group(2))
+                    rating = float(rating.group(1))
 
-                ratings = [float(rating) / 100 for rating in ratings]
+                if not user_ratings:
+                    user_ratings = [0 for _ in range(5)]
+                else:
+                    user_ratings = [float(rating[1]) / 100 for rating in user_ratings]
 
-                if review is not None and ratings is not None and len(ratings) == 5:
-                    TripAdvisorRating.create(country=country, hotel=hotel, area=area, rating=float(review.group(1)),
-                                             review_count=int(review.group(2)), excellent=ratings[0], good=ratings[1],
-                                             average=ratings[2], poor=ratings[3], terrible=ratings[4]).save()
+                if not official_class:
+                    official_class = -1
+                else:
+                    official_class = int(official_class.group(1))
+
+                print(official_class)
+
+                if rating and user_ratings and len(user_ratings) == 5:
+                    TripAdvisorRating.create(country=country, hotel=hotel, area=area, rating=rating,
+                                             review_count=review_count, excellent=user_ratings[0], good=user_ratings[1],
+                                             average=user_ratings[2], poor=user_ratings[3], terrible=user_ratings[4],
+                                             official_class=official_class).save()
+        else:
+            print(f'No URL: {hotel}, {area}, {country}')
 
     def scrape(self):
         self.cancel_tasks = False
@@ -102,3 +120,8 @@ class Scraper:
                 executor.submit(self.add_rating, name, area, country)
 
         getLogger().info(f"Scraping finished")
+
+
+if __name__ == "__main__":
+    while True:
+        Scraper().scrape()

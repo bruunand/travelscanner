@@ -1,7 +1,5 @@
-from logging import getLogger
-from peewee import CharField, IntegerField, FloatField, PrimaryKeyField, BooleanField, DateField
+from peewee import CharField, IntegerField, PrimaryKeyField, BooleanField, DateField
 
-import travelscanner.data
 from travelscanner.models.meta import MetaModel
 from travelscanner.options.travel_options import Countries
 

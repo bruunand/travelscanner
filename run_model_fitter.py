@@ -1,10 +1,10 @@
 import pickle
 from logging import getLogger
 
+import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score, mean_absolute_error
 from xgboost import XGBRegressor
-import matplotlib.pyplot as plt
 
 from travelscanner.data.datasets import split_set, load_prices
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     # Fit RF model to data
     getLogger().info(f'Fitting data using {len(y)} instances')
-    regressor = XGBRegressor(**params)
+    regressor = RandomForestRegressor(**params)
     regressor.fit(x_train, y_train)
 
     # Save model to file

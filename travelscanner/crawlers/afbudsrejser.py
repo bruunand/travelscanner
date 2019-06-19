@@ -23,8 +23,9 @@ class Afbudsrejser(Crawler):
         super().__init__()
 
         self.airport_dictionary = {Airports.AALBORG: 'AAL', Airports.BILLUND: 'BLL', Airports.COPENHAGEN: 'CPH'}
-        self.country_dictionary = {Countries.SPAIN: 19841, Countries.GREECE: 19862, Countries.TURKEY: 19999,
-                                   Countries.CYPRUS: 19828, Countries.BULGARIA: 19795}
+        self.country_dictionary = {Countries.SPAIN: '19841', Countries.GREECE: '19862', Countries.TURKEY: '19999',
+                                   Countries.CYPRUS: '19828', Countries.BULGARIA: '19795', Countries.CROATIA: '19871',
+                                   Countries.HUNGARY: '19873'}
         self.current_departure_date = datetime.today()
 
     def set_agent(self, agent):
@@ -109,8 +110,8 @@ class Afbudsrejser(Crawler):
 
             # Add price
             travel.add_price(Price(price=item['price'], all_inclusive=all_inclusive, link=item['booking_url'],
-                                   room=RoomTypes.parse_da(item['hotel']['room_name']), travel=travel,
-                                   meal=MealTypes.ALL_INCLUSIVE if all_inclusive else MealTypes.UNKNOWN))
+                                   room=item['hotel']['room_name'], travel=travel,
+                                   meal='All Inclusive' if all_inclusive else 'Ikke angivet'))
 
             # Add travel
             travels.add(travel)

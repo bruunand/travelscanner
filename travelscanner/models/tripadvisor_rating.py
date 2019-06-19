@@ -9,6 +9,7 @@ class TripAdvisorRating(MetaModel):
     hotel = CharField()
     rating = FloatField()
     review_count = IntegerField()
+    official_class = IntegerField()
 
     # Distributions over the assigned ratings (from 0 to 1)
     excellent = FloatField()
