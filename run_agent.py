@@ -14,7 +14,7 @@ if __name__ == '__main__':
     options = agent.get_travel_options()
     options.departure_airports = [Airports.AALBORG, Airports.BILLUND, Airports.COPENHAGEN]
     options.set_earliest_departure_date('28/07/2019')
-    options.set_latest_departure_date('02/08/2019')
+    options.set_latest_departure_date('22/08/2019')
     options.number_of_guests = 2
     options.destination_countries = [Countries.GREECE, Countries.SPAIN, Countries.CYPRUS, Countries.TURKEY,
                                      Countries.HUNGARY, Countries.CROATIA]
