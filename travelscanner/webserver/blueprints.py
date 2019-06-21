@@ -18,8 +18,8 @@ def frontpage():
 
 @ts_blueprint.route('/api/get_travels')
 def get_travels():
-    earlist = TravelOptions.parse_date('27/07/2019')
-    latest = TravelOptions.parse_date('03/08/2019')
+    earlist = TravelOptions.parse_date('10/08/2019')
+    latest = TravelOptions.parse_date('21/08/2019')
 
     data = list()
 
@@ -29,8 +29,8 @@ def get_travels():
     travels = Travel.select(Travel, Price, TripAdvisorRating).join(TripAdvisorRating, on=(
             (Travel.country == TripAdvisorRating.country) & (Travel.hotel == TripAdvisorRating.hotel) &
             (Travel.area == TripAdvisorRating.area))).switch(Travel).join(Price). \
-        where((Travel.hotel_stars >= 2) & (Travel.departure_date.between(earlist, latest)) & (Travel.duration_days >= 6)). \
-        where((Price.price < 3000)). \
+        where((Travel.hotel_stars >= 3) & (Travel.departure_date.between(earlist, latest)) & (Travel.duration_days >= 6)). \
+        where((Price.price < 3750)). \
         where(~(Travel.area << banned_areas))
 
     for travel in travels:
@@ -47,10 +47,3 @@ def get_travels():
                      travel.duration_days, travel.price.price, travel.price.predicted_price, ratio])
 
     return json.dumps({'data': data})
-
-
-    #travels = Travel.select(Travel, Price).join(Price). \
-    #    where((Travel.hotel_stars >= 3) & (Travel.country << [Countries.GREECE, Countries.CYPRUS])). \
-    #    where((Price.price.between(3000, 4500)) & (Travel.departure_date.between(earliest, latest))). \
-    #    where((Price.meal << [MealTypes.BREAKFAST, MealTypes.FULL_BOARD, MealTypes.HALF_BOARD])). \
-    #    where((Travel.duration_days >= 7)).\

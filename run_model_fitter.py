@@ -27,7 +27,7 @@ if __name__ == "__main__":
     x_train, x_test, y_train, y_test = split_set(x, y, train_ratio=0.75)
 
     params = {
-        "max_depth": 64
+        "max_depth": 100
     }
 
     # Fit RF model to data
